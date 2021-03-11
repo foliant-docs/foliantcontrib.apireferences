@@ -282,7 +282,7 @@ class APIByTagContent(APIBase):
                     return result
 
         logger.debug('Not found')
-        raise ReferenceNotFoundError(f'Reference {ref.source} not found in API {self.name}')
+        raise ReferenceNotFoundError(f'Reference {ref.source} not found in API "{self.name}"')
 
     def generate_content_by_reference(self,
                                       ref: Reference,
@@ -428,7 +428,7 @@ class APIByAnchor(APIBase):
                     return anchor
 
         logger.debug('Not found')
-        raise ReferenceNotFoundError(f'Reference {ref.source} not found in API {self.name}')
+        raise ReferenceNotFoundError(f'Reference {ref.source} not found in API "{self.name}"')
 
     def is_in_registry(self, elem: str) -> bool:
         """
@@ -725,7 +725,7 @@ class APIBySwagger(APIBase):
                 return api_ref
 
         logger.debug('Not found')
-        raise ReferenceNotFoundError(f'Reference {ref.source} not found in API {self.name}')
+        raise ReferenceNotFoundError(f'Reference {ref.source} not found in API "{self.name}"')
 
 
 class APIForRedoc(APIBySwagger):
