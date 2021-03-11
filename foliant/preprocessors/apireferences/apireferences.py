@@ -6,6 +6,7 @@ from urllib import error
 
 from .classes import (get_api, Reference, ReferenceNotFoundError, set_up_logger,
                       HTTP_VERBS, BadConfigError)
+from foliant.utils import output
 from foliant.preprocessors.utils.combined_options import Options
 from foliant.preprocessors.utils.preprocessor_ext import (BasePreprocessorExt,
                                                           allow_fail)
@@ -37,6 +38,7 @@ class Preprocessor(BasePreprocessorExt):
         'targets': [],
         'trim_if_targets': [],
         'API': {},
+        'warning_level': 2
     }
 
     def __init__(self, *args, **kwargs):
@@ -53,6 +55,7 @@ class Preprocessor(BasePreprocessorExt):
         self.set_apis()
 
         self.counter = 0
+        self.skipped_counter = 0
 
     def is_prefix_defined(self, prefix):
         '''Return True if prefix is defined in config under API or prefix-to-ignore'''
@@ -122,6 +125,7 @@ class Preprocessor(BasePreprocessorExt):
 
             api_url = self.get_api_link_for_reference(ref)
             if not api_url:
+                self.skipped_counter += 1
                 return ref.source
             else:
                 api, url = api_url
@@ -155,11 +159,21 @@ class Preprocessor(BasePreprocessorExt):
         """
 
         if ref.prefix:
-            api = self.get_api_by_prefix(ref)
-            link = api.get_link_by_reference(ref)
-            return api, link
+            try:
+                api = self.get_api_by_prefix(ref)
+                link = api.get_link_by_reference(ref)
+                return api, link
+            except (ReferenceNotFoundError, GenURLError) as e:
+                if self.options['warning_level'] >= 1:
+                    self._warning(str(e))
+                self.logger.debug(str(e))
         else:
-            return self.find_api_link_for_reference(ref)
+            try:
+                return self.find_api_link_for_reference(ref)
+            except (GenURLError, ReferenceNotFoundError) as e:
+                if self.options['warning_level'] >= 2:
+                    self._warning(str(e))
+                self.logger.debug(str(e))
 
     def get_api_by_prefix(self, ref: Reference):
         """
@@ -214,7 +228,7 @@ class Preprocessor(BasePreprocessorExt):
             raise GenURLError(f'{ref.source} is present in several APIs'
                               f' ({", ".join(f[0].name for f in found)}). Please, use prefix.')
         else:
-            self._warning(f'Cannot find reference {ref.source}.')
+            raise ReferenceNotFoundError(f'Cannot find reference {ref.source}.')
 
     def trim_prefixes(self, content: str) -> str:
         def _sub(block) -> str:
@@ -252,4 +266,6 @@ class Preprocessor(BasePreprocessorExt):
         if self.context['target'] in self.options['trim_if_targets']:
             self._process_all_files(self.trim_prefixes, 'Trimming prefixes')
 
-        self.logger.info(f'Preprocessor applied. {self.counter} links were added')
+        message = f'{self.counter} links added, {self.skipped_counter} links skipped.'
+        output(message, self.quiet)
+        self.logger.info(f'Preprocessor applied. ' + message)

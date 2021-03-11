@@ -217,6 +217,7 @@ class APIByTagContent(APIBase):
                 if anchor:
                     content = normalize_content(elem.text)
                     self.registry[content] = normalize_content(anchor)
+        logger.debug(f'Generated registry:\n{self.registry}')
 
     def get_link_by_reference(self, ref: Reference) -> str:
         """
@@ -228,6 +229,7 @@ class APIByTagContent(APIBase):
         :returns: full link to the referenced method.
         """
 
+        logger.debug(f'Getting link for reference {ref} in API {self.name}')
         self.check_reference(ref)
         anchor = self.get_anchor_by_reference(ref)  # may throw ReferenceNotFoundError
         return self.gen_full_url(anchor)
@@ -297,9 +299,9 @@ class APIByTagContent(APIBase):
 
         '''
         logger.debug(
-            'Generating content for reference {ref}'
-            ' with endpoint_prefix' if with_ep else ''
-            ' with relative command' if rel_command else ''
+            f'Generating content for reference {ref}' +
+            (' with endpoint_prefix' if with_ep else '') +
+            (' with relative command' if rel_command else '')
         )
         api_ref = Reference(**ref.__dict__)  # copy of original ref
         if self.endpoint_prefix:
@@ -311,7 +313,9 @@ class APIByTagContent(APIBase):
         if with_ep and self.endpoint_prefix:
             ref_dict['command'] = api_ref.command_with_prefix
 
-        return self.content_template.format(**ref_dict)
+        result = self.content_template.format(**ref_dict)
+        logger.debug(f'Generated content: {result}')
+        return result
 
 
 class APIByAnchor(APIBase):
@@ -362,6 +366,7 @@ class APIByAnchor(APIBase):
                 anchor = elem.attrib.get('id', None)
                 if anchor:
                     insort(self.registry, normalize_content(anchor))
+        logger.debug(f'Generated registry:\n{self.registry}')
 
     def get_link_by_reference(self, ref: Reference) -> str:
         """
@@ -373,6 +378,7 @@ class APIByAnchor(APIBase):
         :returns: full link to the referenced method.
         """
 
+        logger.debug(f'Getting link for reference {ref} in API {self.name}')
         self.check_reference(ref)
         anchor = self.get_anchor_by_reference(ref)  # may throw ReferenceNotFoundError
         return self.gen_full_url(anchor)
@@ -454,9 +460,9 @@ class APIByAnchor(APIBase):
 
         '''
         logger.debug(
-            'Generating anchor for reference {ref}'
-            ' with endpoint_prefix' if with_ep else ''
-            ' with relative command' if rel_command else ''
+            f'Generating anchor for reference {ref}' +
+            (' with endpoint_prefix' if with_ep else '') +
+            (' with relative command' if rel_command else '')
         )
         api_ref = Reference(**ref.__dict__)  # copy of original ref
         if self.endpoint_prefix:
@@ -469,7 +475,9 @@ class APIByAnchor(APIBase):
             ref_dict['command'] = api_ref.command_with_prefix
 
         anchor_source = self.anchor_template.format(**ref_dict)
-        return to_id(anchor_source, self.anchor_converter)
+        result = to_id(anchor_source, self.anchor_converter)
+        logger.debug(f'Generated anchor: {result}')
+        return result
 
 
 class APIGenAnchor(APIBase):
@@ -502,6 +510,7 @@ class APIGenAnchor(APIBase):
 
         :returns: full link to the referenced method.
         """
+        logger.debug(f'Getting link for reference {ref} in API {self.name}')
         self.check_reference(ref)
         anchor = self.generate_anchor_by_reference(ref)
         return self.gen_full_url(anchor)
@@ -623,6 +632,7 @@ class APIBySwagger(APIBase):
                 key = self.REGISTRY_KEY_TEMPLATE.format(verb=verb.upper(),
                                                         command=path_)
                 self.registry[key] = ref_ext
+        logger.debug(f'Generated registry:\n{self.registry}')
 
     def get_link_by_reference(self, ref: Reference) -> str:
         """
@@ -634,6 +644,7 @@ class APIBySwagger(APIBase):
         :returns: full link to the referenced method.
         """
 
+        logger.debug(f'Getting link for reference {ref} in API {self.name}')
         self.check_reference(ref)
         anchor = self.get_anchor_by_reference(ref)  # may throw ReferenceNotFoundError
         return self.gen_full_url(anchor)
@@ -698,7 +709,7 @@ class APIBySwagger(APIBase):
             api_ref.endpoint_prefix = self.endpoint_prefix
 
         key = self.REGISTRY_KEY_TEMPLATE.format(verb=api_ref.verb, command=api_ref.command)
-        logger.debug(f'Looking for reference {ref} by key "{key}"')
+        logger.debug(f'Getting link for reference {ref} by key "{key}"')
         if key in self.registry:
             logger.debug(f'Found')
             for k, v in self.registry[key].items():
@@ -706,7 +717,7 @@ class APIBySwagger(APIBase):
             return api_ref
         elif self.endpoint_prefix:
             key = self.REGISTRY_KEY_TEMPLATE.format(verb=api_ref.verb, command=api_ref.command_with_prefix)
-            logger.debug(f'Not found. Looking for reference with endpoint_prefix by key "{key}"')
+            logger.debug(f'Not found. Getting link for reference with endpoint_prefix by key "{key}"')
             if key in self.registry:
                 logger.debug(f'Found')
                 for k, v in self.registry[key].items():

@@ -534,3 +534,85 @@ class TestAPIReferences(TestCase):
         )
 
         self.assertEqual(0, count_output_warnings(self.ptf.capturedOutput))
+
+    def test_counters(self):
+        self.ptf.options = {
+            'API': {
+                'A-Api': {
+                    'url': 'http://example.com/',
+                    'mode': 'find_by_anchor',
+                    'anchor_template': 'puppy content {verb} {command}',
+                    'endpoint_prefix': '/api/v2'
+                }
+            }
+        }
+
+        self.run_with_mock_url('data/simple_a.html',
+            input_mapping=unpack_file_dict(
+                {'faulty.md': rel_name('data/input/faulty.md')}
+            ),
+            expected_mapping=unpack_file_dict(
+                {'faulty.md': rel_name('data/expected/half_faulty.md')}
+            ),
+        )
+
+        self.assertEqual(3, count_output_warnings(self.ptf.capturedOutput))
+        self.assertIn('1 links added, 3 links skipped.', self.ptf.capturedOutput.getvalue())
+
+    def test_warning_level(self):
+        self.ptf.options = {
+            'warning_level': 2,
+            'API': {
+                'H2H3-Api': {
+                    'url': 'http://example.com/',
+                    'mode': 'find_by_anchor',
+                    'anchor_template': 'user content {verb} {command}',
+                    'endpoint_prefix': '/api/v2'
+                },
+                'A-Api': {
+                    'url': 'http://example.com/',
+                    'mode': 'find_by_anchor',
+                    'anchor_template': 'puppy content {verb} {command}',
+                    'endpoint_prefix': '/api/v2'
+                }
+            }
+        }
+
+        self.run_with_mock_urls(
+            ('data/simple_h2h3.html', 'data/simple_a.html'),
+            input_mapping=unpack_file_dict(
+                {'faulty.md': rel_name('data/input/faulty.md')}
+            ),
+            expected_mapping=unpack_file_dict(
+                {'faulty.md': rel_name('data/expected/faulty.md')}
+            ),
+        )
+        self.assertEqual(4, count_output_warnings(self.ptf.capturedOutput))
+
+        self.ptf.capturedOutput.truncate(0)
+        self.ptf.options['warning_level'] = 1
+        self.run_with_mock_urls(
+            ('data/simple_h2h3.html', 'data/simple_a.html'),
+            input_mapping=unpack_file_dict(
+                {'faulty.md': rel_name('data/input/faulty.md')}
+            ),
+            expected_mapping=unpack_file_dict(
+                {'faulty.md': rel_name('data/expected/faulty.md')}
+            ),
+        )
+
+        self.assertEqual(1, count_output_warnings(self.ptf.capturedOutput))
+
+        self.ptf.capturedOutput.truncate(0)
+        self.ptf.options['warning_level'] = 0
+        self.run_with_mock_urls(
+            ('data/simple_h2h3.html', 'data/simple_a.html'),
+            input_mapping=unpack_file_dict(
+                {'faulty.md': rel_name('data/input/faulty.md')}
+            ),
+            expected_mapping=unpack_file_dict(
+                {'faulty.md': rel_name('data/expected/faulty.md')}
+            ),
+        )
+
+        self.assertEqual(0, count_output_warnings(self.ptf.capturedOutput))
