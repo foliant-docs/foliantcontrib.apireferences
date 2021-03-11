@@ -199,6 +199,7 @@ preprocessors:
     trim_if_targets: # optional. default: []
         - pdf
     prefix_to_ignore: Ignore  # optional
+    warning_level: 2  # optional
     reference:  # optional
         - regex: *ref_pattern
           only_with_prefixes: false
@@ -251,6 +252,9 @@ preprocessors:
 
 `prefix_to_ignore`
 :   *(optional)* A default prefix for ignoring references. If APIReferences meets a reference with this prefix it leaves it unchanged. Default: `Ignore`
+
+`warning_level`
+:   *(optional)* `2` — show all warnings for not found references; `1` — show only warnings for not found prefixed references; `0` — don't show warnings about not found references. Default: `2`
 
 `reference`
 :   *(optional)* List of dictionaries. A subsection for listing all the types of references you are going to catch in the text, and their properties. Options for this section are listed below.
