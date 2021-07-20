@@ -1,12 +1,15 @@
 import io
-import sys
 import logging
 import os
-from unittest.mock import patch, Mock
-from unittest import TestCase
+import sys
+
 from foliant.preprocessors.apireferences.classes import HTTP_VERBS
-from foliant_test.preprocessor import (PreprocessorTestFramework, unpack_file_dict,
-                                       unpack_dir)
+from foliant_test.preprocessor import PreprocessorTestFramework
+from foliant_test.preprocessor import unpack_dir
+from foliant_test.preprocessor import unpack_file_dict
+from unittest import TestCase
+from unittest.mock import Mock
+from unittest.mock import patch
 
 
 logging.basicConfig(

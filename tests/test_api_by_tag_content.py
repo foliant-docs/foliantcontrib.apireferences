@@ -1,7 +1,11 @@
 import os
+
+from foliant.preprocessors.apireferences.classes import APIByTagContent
+from foliant.preprocessors.apireferences.classes import Reference
+from foliant.preprocessors.apireferences.classes import ReferenceNotFoundError
 from unittest import TestCase
-from unittest.mock import patch, Mock
-from foliant.preprocessors.apireferences.classes import Reference, APIByTagContent, ReferenceNotFoundError
+from unittest.mock import Mock
+from unittest.mock import patch
 
 
 def rel_name(path: str):

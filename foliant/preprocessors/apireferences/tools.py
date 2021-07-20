@@ -1,6 +1,7 @@
 import base64
 
-from urllib.request import Request, urlopen
+from urllib.request import Request
+from urllib.request import urlopen
 
 
 def ensure_root(route):

@@ -1,21 +1,27 @@
 '''Helper classes for APIReferences preprocessor'''
 
-import yaml
+import re
 import ssl
 import sys
-import re
+import yaml
 
-from bisect import bisect_left, insort
-from inspect import getmembers, isclass, getfullargspec
+from bisect import bisect_left
+from bisect import insort
+from inspect import getfullargspec
+from inspect import getmembers
+from inspect import isclass
 from io import BytesIO
-from pathlib import PosixPath
 from logging import getLogger
 from lxml import etree
+from pathlib import PosixPath
 from urllib.request import urlopen
 
-from foliant.preprocessors.utils.header_anchors import to_id
-from foliant.preprocessors.utils.combined_options import Options
-from .tools import urlopen_with_auth, normalize_content, ensure_root
+from .tools import ensure_root
+from .tools import normalize_content
+from .tools import urlopen_with_auth
+from foliant.contrib.combined_options import Options
+from foliant.contrib.header_anchors import to_id
+
 
 logger = getLogger('flt.apireferences.classes')
 

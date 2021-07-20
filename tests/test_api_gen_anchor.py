@@ -1,6 +1,8 @@
 import os
+
+from foliant.preprocessors.apireferences.classes import APIGenAnchor
+from foliant.preprocessors.apireferences.classes import Reference
 from unittest import TestCase
-from foliant.preprocessors.apireferences.classes import Reference, APIGenAnchor
 
 
 def rel_name(path: str):

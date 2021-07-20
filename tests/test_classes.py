@@ -1,6 +1,9 @@
 import os
+
+from foliant.preprocessors.apireferences.classes import BadConfigError
+from foliant.preprocessors.apireferences.classes import WrongModeError
+from foliant.preprocessors.apireferences.classes import get_api
 from unittest import TestCase
-from foliant.preprocessors.apireferences.classes import get_api, WrongModeError, BadConfigError
 
 
 def rel_name(path: str):

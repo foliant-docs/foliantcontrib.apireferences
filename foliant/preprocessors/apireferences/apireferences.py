@@ -1,15 +1,20 @@
 '''APIReferences preprocessor for Foliant. Replaces API references with links to API
 docs'''
 import re
+
 from collections import OrderedDict
 from urllib import error
 
-from .classes import (get_api, Reference, ReferenceNotFoundError, set_up_logger,
-                      HTTP_VERBS, BadConfigError)
+from .classes import BadConfigError
+from .classes import HTTP_VERBS
+from .classes import Reference
+from .classes import ReferenceNotFoundError
+from .classes import get_api
+from .classes import set_up_logger
+from foliant.contrib.combined_options import Options
+from foliant.preprocessors.utils.preprocessor_ext import BasePreprocessorExt
+from foliant.preprocessors.utils.preprocessor_ext import allow_fail
 from foliant.utils import output
-from foliant.preprocessors.utils.combined_options import Options
-from foliant.preprocessors.utils.preprocessor_ext import (BasePreprocessorExt,
-                                                          allow_fail)
 
 
 DEFAULT_REF_REGEX = r'`((?P<prefix>[\w-]+):\s*)?' +\

@@ -1,7 +1,8 @@
 import re
-from unittest import TestCase
-from foliant.preprocessors.apireferences.classes import Reference
+
 from foliant.preprocessors.apireferences.apireferences import DEFAULT_REF_REGEX
+from foliant.preprocessors.apireferences.classes import Reference
+from unittest import TestCase
 
 
 class TestReference(TestCase):
