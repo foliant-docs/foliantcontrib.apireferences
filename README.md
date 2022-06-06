@@ -77,7 +77,7 @@ Glossary:
 - **reference** — reference to an API method in the source file. The one to be replaced with the link, e.g. `GET user/config`
 - **verb** — HTTP method, e.g. `GET`, `POST`, etc.
 - **command** — resource used to represent method on the API documentation webpage, e.g. `/service/healthcheck`.
-- **endpoint prefix** — A prefix from server root to the command. If the command is `/user/status` and full resource is `/api/v0/user/satus` then the endpoint prefix should be stated `/api/v0`. In references you can use either full resource (`{endpoint_prefix}/{command}`) or just the command. APIReferences will sort it out for you.
+- **endpoint prefix** — A prefix from server root to the command. If the command is `/user/status` and full resource is `/api/v0/user/status` then the endpoint prefix should be stated `/api/v0`. In references you can use either full resource (`{endpoint_prefix}/{command}`) or just the command. APIReferences will sort it out for you.
 - **output** — string, which will replace the *reference*.
 - **tag content** — plain text between the tags, for example `<tag>Tag content</tag>`.
 - **anchor** — web-element id with leading number sign, for example `#get-user-config`. Adding the anchor to the end of the web URL will make a browser scroll to the specified web element.
