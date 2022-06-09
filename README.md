@@ -312,6 +312,9 @@ The list of options and some default values differ for each mode.
 `endpoint_prefix`
 :   *(optional)* The endpoint prefix from the server root to API methods. If is stated — APIReferences can divide the command in the reference and search for it more accurately. Also, you could use it in templates. More info in the **Commands and Endpoint Prefixes** section. Default: `''`
 
+`trim_query`
+: *(optional)* Cut a query part after `?` character from command while searching for an API link. Default: `True`
+
 **`find_by_anchor` mode**
 
 `url`
@@ -335,6 +338,9 @@ The list of options and some default values differ for each mode.
 `password`
 :    *(optional)* Password for basic authentication if present on your API site.
 
+`trim_query`
+: *(optional)* Cut a query part after `?` character from command while searching for an API link. Default: `True`
+
 **`find_by_tag_content` mode**
 
 `url`
@@ -354,6 +360,9 @@ The list of options and some default values differ for each mode.
 
 `password`
 :    *(optional)* Password for basic authentication if present on your API site.
+
+`trim_query`
+: *(optional)* Cut a query part after `?` character from command while searching for an API link. Default: `True`
 
 **`find_for_swagger` mode**
 
@@ -375,6 +384,9 @@ The list of options and some default values differ for each mode.
 `password`
 :    *(optional)* Password for basic authentication if present on your API site.
 
+`trim_query`
+: *(optional)* Cut a query part after `?` character from command while searching for an API link. Default: `True`
+
 **`find_for_redoc` mode**
 
 `url`
@@ -394,6 +406,9 @@ The list of options and some default values differ for each mode.
 
 `password`
 :    *(optional)* Password for basic authentication if present on your API site.
+
+`trim_query`
+: *(optional)* Cut a query part after `?` character from command while searching for an API link. Default: `True`
 
 # User guide
 
@@ -899,22 +914,22 @@ preprocessors:
 
 With the default template, the reference string will be replaced by something like that:
 
-```
+```md
 [GET user/info](http://example.com/api/#get-user-info)
 ```
 
 If you want references to be transformed into something else, create your own template. You can use placeholders from the reference regular expression along with some additional:
 
-placeholder | description | example
--------- | ----------- | -------
-source | Full original reference string | \``Client-API: GET user/info`\`
-url | Full url to the method description | `http://example.com/api/#get-user-info`
-endpoint_prefix | API endpoint prefix from API configuration | `/api/v2`
+| placeholder     | description                                | example                                 |
+|-----------------|--------------------------------------------|-----------------------------------------|
+| source          | Full original reference string             | \``Client-API: GET user/info`\`         |
+| url             | Full url to the method description         | `http://example.com/api/#get-user-info` |
+| endpoint_prefix | API endpoint prefix from API configuration | `/api/v2`                               |
 
 Placeholders from the default regex are:
 
-placeholder | description | example
--------- | ----------- | -------
-prefix | API Prefix used in the reference | `Client-API`
-verb | HTTP verb used in the reference | `GET`
-command | API command being referenced with endpoint prefix removed | `/user/info`
+| placeholder | description                                               | example      |
+|-------------|-----------------------------------------------------------|--------------|
+| prefix      | API Prefix used in the reference                          | `Client-API` |
+| verb        | HTTP verb used in the reference                           | `GET`        |
+| command     | API command being referenced with endpoint prefix removed | `/user/info` |
