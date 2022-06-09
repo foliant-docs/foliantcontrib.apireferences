@@ -1,3 +1,7 @@
+# 1.0.3
+
+-   New: `trim_query` option (default: True) for every API class
+
 # 1.0.2
 
 -   New utils module.

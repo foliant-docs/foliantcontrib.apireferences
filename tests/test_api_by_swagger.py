@@ -166,6 +166,19 @@ class TestAPIBySwagger(TestCase):
         anchor = api.get_anchor_by_reference(ref)
         self.assertEqual(anchor, expected_anchor)
 
+    def test_get_anchor_by_reference_with_query(self):
+        api = APIBySwagger(
+            name='Test',
+            url='http://example.com/',
+            spec=rel_name('data/swagger.json'),
+            anchor_template='/{tag}/{operation_id}',
+        )
+
+        ref = Reference(verb='PUT', command='/pet?spieces=cat,dog')
+        expected_anchor = '/pettag/updatePet'
+        anchor = api.get_anchor_by_reference(ref)
+        self.assertEqual(anchor, expected_anchor)
+
     def test_get_anchor_by_reference_custom_template(self):
         api = APIBySwagger(
             name='Test',

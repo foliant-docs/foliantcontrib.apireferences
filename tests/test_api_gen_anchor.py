@@ -20,6 +20,16 @@ class TestAPIGenAnchor(TestCase):
         anchor = api.generate_anchor_by_reference(ref)
         self.assertEqual(anchor, 'user-content-get-userinfo')
 
+    def test_generate_anchor_by_reference_with_query(self):
+        api = APIGenAnchor(
+            name='Test',
+            url='http://example.com/',
+            anchor_template='user content {verb} {command}',
+        )
+        ref = Reference(verb='GET', command='/user/info?type=common,secret')
+        anchor = api.generate_anchor_by_reference(ref)
+        self.assertEqual(anchor, 'user-content-get-userinfo')
+
     def test_generate_anchor_by_reference_custom_field(self):
         api = APIGenAnchor(
             name='Test',

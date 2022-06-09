@@ -183,6 +183,13 @@ class TestAPIByAnchor(TestCase):
         link = api.get_link_by_reference(ref)
         self.assertEqual(link, 'http://example.com/#user-content-get-systemrestart')
 
+    def test_get_link_by_reference_with_query(self):
+        api = self.get_basic_api()
+        api.endpoint_prefix = '/api/v2'
+        ref = Reference(verb='GET', command='/admin/status?users=guest,admin')
+        link = api.get_link_by_reference(ref)
+        self.assertEqual(link, 'http://example.com/#user-content-get-apiv2adminstatus')
+
     def test_get_nonexistant_link(self):
         api = self.get_basic_api()
         ref = Reference(verb='GET', command='/wrong/command')
