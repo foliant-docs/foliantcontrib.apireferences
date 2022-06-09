@@ -4,7 +4,7 @@
 
 > APIReferences is a successor of APILinks preprocessor with slightly changed configuration syntax and completely rewritten insides. APILinks is now deprecated, please use APIReferences instead.
 
-Preprocessor replaces API *reference*s in markdown files with links to corresponding method description on the API documentation web-page.
+Preprocessor replaces API *reference*s in markdown files with links to the corresponding method description on the API documentation web-page.
 
 ## What is it for?
 
@@ -77,7 +77,7 @@ Glossary:
 - **reference** — reference to an API method in the source file. The one to be replaced with the link, e.g. `GET user/config`
 - **verb** — HTTP method, e.g. `GET`, `POST`, etc.
 - **command** — resource used to represent method on the API documentation webpage, e.g. `/service/healthcheck`.
-- **endpoint prefix** — A prefix from server root to the command. If the command is `/user/status` and full resource is `/api/v0/user/status` then the endpoint prefix should be stated `/api/v0`. In references you can use either full resource (`{endpoint_prefix}/{command}`) or just the command. APIReferences will sort it out for you.
+- **endpoint prefix** — A prefix from server root to the command. If the command is `/user/status` and full resource is `/api/v0/user/status` then the endpoint prefix should be stated `/api/v0`. In references, you can use either full resource (`{endpoint_prefix}/{command}`) or just the command. APIReferences will sort it out for you.
 - **output** — string, which will replace the *reference*.
 - **tag content** — plain text between the tags, for example `<tag>Tag content</tag>`.
 - **anchor** — web-element id with leading number sign, for example `#get-user-config`. Adding the anchor to the end of the web URL will make a browser scroll to the specified web element.
@@ -93,7 +93,7 @@ We want reference \``GET /user/status`\` to be pointed at this element on our AP
 <h2 id="get-user-status">Operation GET /user/status</h2>
 ```
 
-Minimal sufficiant foliant.yml:
+Minimal sufficient foliant.yml:
 
 ```yaml
 preprocessors:
@@ -115,7 +115,7 @@ The task is the same as in Recipe 1. We want reference \``GET /user/status`\` to
 <h2 id="get-user-status">Operation GET /user/status</h2>
 ```
 
-Minimal sufficiant foliant.yml:
+Minimal sufficient foliant.yml:
 
 ```yaml
 preprocessors:
@@ -138,7 +138,7 @@ The task is the same as in Recipes 1 and 2, but this time you don't have access 
 <h2 id="get-user-status">Operation GET /user/status</h2>
 ```
 
-Minimal sufficiant foliant.yml:
+Minimal sufficient foliant.yml:
 
 ```yaml
 preprocessors:
@@ -155,11 +155,11 @@ preprocessors:
 
 ### Recipe 4: find link for SwaggerUI
 
-We have a SwaggerUI website and we need to find link to the method by reference \``GET /user/status`\``.
+We have a SwaggerUI website, and we need to find the link to the method by reference \``GET /user/status`\``.
 
 Method anchors on SwaggerUI consist of tag and operationId, both of which are not present in our reference. APIReferences can find them for you in the spec file. Let's assume that correct tag and operationId are `usertag` and `getStatus`.
 
-Minimal sufficiant foliant.yml:
+Minimal sufficient foliant.yml:
 
 ```yaml
 preprocessors:
@@ -243,7 +243,7 @@ preprocessors:
 ```
 
 `targets`
-:   *(optional)* List of supported targets for `foliant make` command. If target is not listed here — preprocessor won't be applied. If the list is empty — preprocessor will be applied for any target. Default: `[]`
+:   *(optional)* List of supported targets for `foliant make` command. If target is not listed here — preprocessor won't be applied. If the list is an empty — preprocessor will be applied for any target. Default: `[]`
 
 `trim_if_targets`
 :   *(optional)* List of targets for `foliant make` command for which the prefixes from all *references* in the text will be cut out. Default: `[]`
@@ -251,7 +251,7 @@ preprocessors:
 > Only those references whose prefixes are defined in the `API` section (described below) are affected by this option. All references with unlisted prefixes will not be trimmed.
 
 `prefix_to_ignore`
-:   *(optional)* A default prefix for ignoring references. If APIReferences meets a reference with this prefix it leaves it unchanged. Default: `Ignore`
+:   *(optional)* A default prefix for ignoring references. If APIReferences meets a reference with this prefix, it leaves it unchanged. Default: `Ignore`
 
 `warning_level`
 :   *(optional)* `2` — show all warnings for not found references; `1` — show only warnings for not found prefixed references; `0` — don't show warnings about not found references. Default: `2`
@@ -283,7 +283,7 @@ Default:
 :   *(optional)* A template string describing the *output* which will replace the *reference*. More info in the **Customizing Output** section. Default: `'[{verb} {command}]({url})'`
 
 `trim_template`
-:   *(optional)* Only for targets listed in `trim_if_targets` option. Tune this template if you want to customize how APIReferences cuts out prefixes. The reference will be replaced with text based on this template. Default: ```'`{verb} {command}`'```
+:   *(optional)* Only for targets listed in `trim_if_targets` option. Tune this template if you want to customize how APIReferences cuts out prefixes. The reference will be replaced with a text based on this template. Default: ```'`{verb} {command}`'```
 
 ***
 
@@ -310,7 +310,7 @@ The list of options and some default values differ for each mode.
 :   *(optional)* anchor converter from [this list](https://github.com/foliant-docs/foliantcontrib.utils.header_anchors#to_id). Determines how string `GET /user/status` is converted into `get-userstatus` or `get-user-status` etc. [List of available converters](https://github.com/foliant-docs/foliantcontrib.utils.header_anchors#to_id). Default: `pandoc`
 
 `endpoint_prefix`
-:   *(optional)* The endpoint prefix from the server root to API methods. If is stated — APIReferences can divide the command in the reference and search for it more accurately. Also, you could use it in templates. More info in the **Commands and Endpoint Prefixes** section. Default: `''`
+:   *(optional)* The endpoint prefix from the server root to API methods. If is stated — APIReferences can divide the command into the reference and search for it more accurately. Also, you could use it in templates. More info in the **Commands and Endpoint Prefixes** section. Default: `''`
 
 `trim_query`
 : *(optional)* Cut a query part after `?` character from command while searching for an API link. Default: `True`
@@ -327,7 +327,7 @@ The list of options and some default values differ for each mode.
 :   *(optional)* anchor converter from [this list](https://github.com/foliant-docs/foliantcontrib.utils.header_anchors#to_id). Determines how string `GET /user/status` is converted into `get-userstatus` or `get-user-status` etc. Default: `pandoc`
 
 `endpoint_prefix`
-:   *(optional)* The endpoint prefix from the server root to API methods. If is stated — APIReferences can divide the command in the reference and search for it more accurately. Also, you could use it in templates. More info in the **Commands and Endpoint Prefixes** section. Default: `''`
+:   *(optional)* The endpoint prefix from the server root to API methods. If is stated — APIReferences can divide the command into the reference and search for it more accurately. Also, you could use it in templates. More info in the **Commands and Endpoint Prefixes** section. Default: `''`
 
 `tags`
 :   *(optional)* list of HTML tags which will be parsed out from the page and searched for ids. Default: `['h1', 'h2', 'h3', 'h4']`
@@ -350,7 +350,7 @@ The list of options and some default values differ for each mode.
 :   *(required)* A template string describing the format of the tag content in the API documentation web-page. You can use placeholders in {curly braces}, with names of the groups in the reference regex. Example: `'{verb} {command}'`.
 
 `endpoint_prefix`
-:   *(optional)* The endpoint prefix from the server root to API methods. If is stated — APIReferences can divide the command in the reference and search for it more accurately. Also you could use it in templates. More info in the **Commands and Endpoint Prefixes** section. Default: `''`
+:   *(optional)* The endpoint prefix from the server root to API methods. If is stated — APIReferences can divide the command into the reference and search for it more accurately. Also, you could use it in templates. More info in the **Commands and Endpoint Prefixes** section. Default: `''`
 
 `tags`
 :   *(optional)* list of HTML tags which will be parsed out from the page and searched for ids. Default: `['h1', 'h2', 'h3', 'h4']`
@@ -421,13 +421,13 @@ Reference is a chunk of text in your Markdown source which will be parsed by API
 
 These groups then will be used to find the referenced method on the API website and also to construct an *output string*.
 
-For example, with `find_by_tag_content` mode (see the detailed description of all modes below) APIReferences will use `content_template` from API configuration to construct a tag content and search for it on the API website. If the content template is `'{verb} {command}'`, then the constructed content for the example above will be `GET /user/authenticate`. APIReferences will search for a tag with such content on the page and get its id.
+For example, with `find_by_tag_content` mode (see the detailed description of all modes below) APIReferences will use `content_template` from API configuration to construct a tag content and search for it on the API website. If the content template is `'{verb} {command}'`, then the constructed content, for the example above, will be `GET /user/authenticate`. APIReferences will search for a tag with such content on the page and get its id.
 
 The found tag may be `<h2 id="get-userauthenticate">GET /user/authenticate</h2>`. APIReferences will take the id from this tag and use it as an anchor to the link: `#get-userauthenticate`. Then it will add the API website path and here's your url: `http://example.com/api/#get-userauthenticate`.
 
 Now, when APILink has the url of the method description, it can construct an output string. The output string is formed by a template, stated in reference `output_template` param. This template contains placeholders, which correspond to the reference groups with an addition of `{url}` placeholder, which contains the url formed above.
 
-If the output template is `'[{verb} {command}]({url})'`, then the output string for our example will be:
+If the output template is `'[{verb} {command}]({url})'`, then the output string, for our example, will be:
 
 `[GET /user/authenticate](http://example.com/api/#get-userauthenticate)`.
 
@@ -490,7 +490,7 @@ Then it will pass it to the anchor template `'user content {verb} {command}'` wh
 
 `'user content GET /user/status'`
 
-After that APIReferences will convert this string into an id with anchor converter. We've chosen `pandoc` converter in our config, which will turn the string into this: `user-content-getuserstatus`. That's exactly the id we needed, look an the webpage source:
+After that, APIReferences will convert this string into an id with an anchor converter. We've chosen `pandoc` converter in our config, which will turn the string into this: `user-content-getuserstatus`. That's exactly the id we needed, look at the webpage source:
 
 ```html
 <h2 id="user-content-get-userstatus">GET /user/status</h2>
@@ -558,7 +558,7 @@ Then it will pass it to the anchor template `'api-method {verb} {command}'` whic
 
 `'user content GET /user/status'`
 
-After that APIReferences will convert this string into an id with an anchor converter. We've used `pandoc` converter in our config, which will turn the string into this: `api-method-getuserstatus`.
+After that, APIReferences will convert this string into an id with an anchor converter. We've used `pandoc` converter in our config, which will turn the string into this: `api-method-getuserstatus`.
 
 Now APIReferences will parse the web page and look for all `h1` and `h2` tags (as specified in `tags` parameter) that have ids and compare these ids to our generated id.
 
@@ -586,7 +586,7 @@ To find out user's status use **[GET /user/status](http://example.com/api#api-me
 
 `find_by_tag_content` generates tag content by the `content_template` and searches for an HTML element with such content on the API web page. If an element is found, the reference is converted into a Markdown link. If not — the reference is skipped.
 
-This mode is convenient when there's no way to determine tag id basing on the reference, for example, when ids are random strings.
+This mode is convenient when there's no way to determine tag ID based on the reference, for example, when ids are random strings.
 
 Let's assume that your API website code looks like this:
 
@@ -677,7 +677,7 @@ Let's assume that your OpenAPI specification looks like this:
 
 ```
 
-On the default SwaggerUI website the anchor to this method will be `#/userauth/checkStatus`. It consists of the first tag from the operation properties and the operationId. So to generate the proper anchor APIReferences will need to get those parts from the spec. 
+On the default SwaggerUI website the anchor to this method will be `#/userauth/checkStatus`. It consists of the first tag from the operation properties and the operationId. So to generate the proper anchor APIReferences, will need to get those parts from the spec. 
 
 APIReferences config in your `foliant.yml` in this case may look like this:
 
@@ -715,7 +715,7 @@ These values are then passed to the anchor template `'/{tag}/{operation_id}'`, a
 
 `'/userauth/checkStatus'`
 
-That's the id we were looking for. APIReferences will add it to our API url (which we've stated in config) to form a link: `http://example.com/api#/userauth/checkStatus`.
+That's the ID we were looking for. APIReferences will add it to our API url (which we've stated in config) to form a link: `http://example.com/api#/userauth/checkStatus`.
 
 Finally, it's time to construct a Markdown link. APIReferences takes an `output_template` from the reference config, which is default: `'[{verb} {command}]({url})'`.
 
@@ -731,7 +731,7 @@ To find out user's status use [GET /user/login](http://example.com/api#/userauth
 
 ### `find_for_redoc` mode
 
-`find_for_redoc` is similar to `find_for_swagger` mode, except that deafult anchor template is `'operation/{operation_id}'`.
+`find_for_redoc` is similar to `find_for_swagger` mode, except that default anchor template is `'operation/{operation_id}'`.
 
 ## Handling Multiple APIs
 
@@ -817,7 +817,7 @@ With such config references with prefixes will be transformed into **bold links*
 
 ## Commands and Endpoint Prefixes
 
-APIReferences treats the `command` part of your reference in a special way. While searching for it on the API website it will try to substitute the command place holder:
+APIReferences treats the `command` part of your reference in a special way. While searching for it on the API website, it will try to substitute the command placeholder:
 
 - with and without leading slash (`/user/login` and `user/login`),
 - with and without endpoint prefix, if one is defined (`/api/v1/user/login` and `/user/login`).
@@ -878,11 +878,11 @@ This expression accepts references like these:
 - `Client-API: GET user/info`
 - `UPDATE user/details`
 
-Notice that the default expression uses [Named Capturing Groups](https://docs.python.org/3/howto/regex.html#non-capturing-and-named-groups). You have to use them too if you are to redefine the expression. You can name these groups as you like and have as many or as few as you wish, but it's recommended to include the `prefix` group for API prefix logic to work. It is also required for all groups which are in the `output_template` also to be present in the regex.
+Notice that the default expression uses [Named Capturing Groups](https://docs.python.org/3/howto/regex.html#non-capturing-and-named-groups). You have to use them too, if you are to redefine the expression. You can name these groups as you like and have as many or as few as you wish, but it's recommended to include the `prefix` group for API prefix logic to work. It is also required for all groups which are in the `output_template` also to be present in the regex.
 
-To redefine the regular expression add an option `regex` to the reference config.
+To redefine the regular expression, add an option `regex` to the reference config.
 
-For example, if you want to capture ONLY references with prefixes you may use the following:
+For example, if you want to capture ONLY references with prefixes, you may use the following:
 
 ```yaml
 preprocessors:
