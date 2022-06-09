@@ -131,6 +131,13 @@ class Reference:
         """
         return self.command.lstrip('/')
 
+    @property
+    def trim_query(self):
+        """
+        Return command without a query.
+        """
+        return self.command.split('?')[0]
+
 
 class APIBase:
     """
@@ -187,12 +194,14 @@ class APIByTagContent(APIBase):
                  name: str,
                  url: str,
                  content_template: str,
+                 trim_query: bool = True,
                  endpoint_prefix: str = '',
                  tags: list = DEFAULT_TAG_LIST,
                  login: str or None = None,
                  password: str or None = None):
         super().__init__(name, url)
         self.content_template = content_template
+        self.trim_query = trim_query
         self.tags = tags
         self.registry = {}
         self.endpoint_prefix = endpoint_prefix
@@ -312,8 +321,9 @@ class APIByTagContent(APIBase):
         api_ref = Reference(**ref.__dict__)  # copy of original ref
         if self.endpoint_prefix:
             api_ref.endpoint_prefix = self.endpoint_prefix
-
         ref_dict = api_ref.__dict__
+        if self.trim_query:
+            ref_dict['command'] = api_ref.trim_query
         if rel_command:
             ref_dict['command'] = api_ref.rel_command
         if with_ep and self.endpoint_prefix:
@@ -336,6 +346,7 @@ class APIByAnchor(APIBase):
                  name: str,
                  url: str,
                  anchor_template: str,
+                 trim_query: bool = True,
                  anchor_converter: str = 'pandoc',
                  endpoint_prefix: str = '',
                  tags: list = DEFAULT_TAG_LIST,
@@ -343,6 +354,7 @@ class APIByAnchor(APIBase):
                  password: str or None = None):
         super().__init__(name, url)
         self.anchor_template = anchor_template
+        self.trim_query = trim_query
         self.anchor_converter = anchor_converter
         self.tags = tags
         self.registry = {}
@@ -409,7 +421,7 @@ class APIByAnchor(APIBase):
         Get anchor for the reference from self.registry. The search is performed by
         anchor formatted by self.anchor_template. First try with `command from the
         reference, then (if that fails), try removing leading slash from command,
-        then (if that fails), tryadding self.endpoint_prefix if present.
+        then (if that fails), try adding self.endpoint_prefix if present.
 
         If reference cannot be found — raise ReferenceNotFoundError.
 
@@ -470,11 +482,12 @@ class APIByAnchor(APIBase):
             (' with endpoint_prefix' if with_ep else '') +
             (' with relative command' if rel_command else '')
         )
-        api_ref = Reference(**ref.__dict__)  # copy of original ref
+        api_ref = Reference(**ref.__dict__) # copy of original ref
         if self.endpoint_prefix:
             api_ref.endpoint_prefix = self.endpoint_prefix
-
         ref_dict = api_ref.__dict__
+        if self.trim_query:
+            ref_dict['command'] = api_ref.trim_query
         if rel_command:
             ref_dict['command'] = api_ref.rel_command
         if with_ep and self.endpoint_prefix:
@@ -501,10 +514,12 @@ class APIGenAnchor(APIBase):
                  name: str,
                  url: str,
                  anchor_template: str,
+                 trim_query: bool = True,
                  anchor_converter: str = 'pandoc',
                  endpoint_prefix: str = ''):
         super().__init__(name, url)
         self.anchor_template = anchor_template
+        self.trim_query = trim_query
         self.anchor_converter = anchor_converter
         self.endpoint_prefix = endpoint_prefix
 
@@ -550,6 +565,8 @@ class APIGenAnchor(APIBase):
             api_ref.endpoint_prefix = self.endpoint_prefix
 
         ref_dict = api_ref.__dict__
+        if self.trim_query:
+            ref_dict['command'] = api_ref.trim_query
         anchor_source = self.anchor_template.format(**ref_dict)
         return to_id(anchor_source, self.anchor_converter)
 
@@ -572,6 +589,7 @@ class APIBySwagger(APIBase):
         name: str,
         url: str,
         spec: str or PosixPath,
+        trim_query: bool = True,
         anchor_template: str = DEFAULT_ANCHOR_TEMPLATE,
         anchor_converter: str = 'no_transform',
         endpoint_prefix: str = '',
@@ -579,6 +597,7 @@ class APIBySwagger(APIBase):
         password: str or None = None,
     ):
         super().__init__(name, url)
+        self.trim_query = trim_query
         self.anchor_template = anchor_template
         self.anchor_converter = anchor_converter
         self.endpoint_prefix = endpoint_prefix
@@ -713,8 +732,10 @@ class APIBySwagger(APIBase):
         api_ref = Reference(**ref.__dict__)  # copy of original ref
         if self.endpoint_prefix:
             api_ref.endpoint_prefix = self.endpoint_prefix
-
-        key = self.REGISTRY_KEY_TEMPLATE.format(verb=api_ref.verb, command=api_ref.command)
+        command = api_ref.command
+        if self.trim_query:
+            command = api_ref.trim_query
+        key = self.REGISTRY_KEY_TEMPLATE.format(verb=api_ref.verb, command=command)
         logger.debug(f'Getting link for reference {ref} by key "{key}"')
         if key in self.registry:
             logger.debug(f'Found')
