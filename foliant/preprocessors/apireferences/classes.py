@@ -536,12 +536,15 @@ class APIGenAnchor(APIBase):
                  anchor_template: str,
                  trim_query: bool = True,
                  anchor_converter: str = 'pandoc',
-                 endpoint_prefix: str = ''):
+                 endpoint_prefix: str = '',
+                 endpoint_prefix_list = []):
         super().__init__(name, url)
         self.anchor_template = anchor_template
         self.trim_query = trim_query
         self.anchor_converter = anchor_converter
         self.endpoint_prefix = endpoint_prefix
+        self.endpoint_prefix_tmp = endpoint_prefix
+        self.endpoint_prefix_list = endpoint_prefix_list
 
     def get_link_by_reference(self, ref: Reference) -> str:
         """
@@ -587,6 +590,7 @@ class APIGenAnchor(APIBase):
         ref_dict = api_ref.__dict__
         if self.trim_query:
             ref_dict['command'] = api_ref.trim_query
+        self.endpoint_prefix_tmp = find_endpoint_prefix(self.endpoint_prefix_list, self.endpoint_prefix_tmp, ref_dict['command'])
         anchor_source = self.anchor_template.format(**ref_dict)
         return to_id(anchor_source, self.anchor_converter)
 
