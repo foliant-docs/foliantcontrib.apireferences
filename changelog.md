@@ -1,3 +1,7 @@
+# 1.0.4
+
+-   New: `endpoint_prefix_list` option (default: `[]`) for every API class
+
 # 1.0.3
 
 -   New: `trim_query` option (default: True) for every API class

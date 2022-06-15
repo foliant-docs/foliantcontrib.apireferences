@@ -135,7 +135,7 @@ class Preprocessor(BasePreprocessorExt):
             else:
                 api, url = api_url
 
-            ref.endpoint_prefix = api.endpoint_prefix
+            ref.endpoint_prefix = api.endpoint_prefix_tmp
             self.counter += 1
             return ref_options['output_template'].format(url=url, **ref.__dict__)
 

@@ -215,6 +215,7 @@ preprocessors:
             anchor_template: '{verb} {command}'
             anchor_converter: pandoc  # optional
             endpoint_prefix: /api/v1  # optional
+            endpoint_prefix_list: [/api/v1/,/api/v2/,/api/v3/]
         Admin-API:
             mode: find_by_anchor
             url: http://example.com/api/admin
@@ -312,6 +313,9 @@ The list of options and some default values differ for each mode.
 `endpoint_prefix`
 :   *(optional)* The endpoint prefix from the server root to API methods. If is stated — APIReferences can divide the command into the reference and search for it more accurately. Also, you could use it in templates. More info in the **Commands and Endpoint Prefixes** section. Default: `''`
 
+`endpoint_prefix_list`
+: *(optional)* The list of available endpoint prefixes which could be added to output. Default: `[]`
+
 `trim_query`
 : *(optional)* Cut a query part after `?` character from command while searching for an API link. Default: `True`
 
@@ -328,6 +332,9 @@ The list of options and some default values differ for each mode.
 
 `endpoint_prefix`
 :   *(optional)* The endpoint prefix from the server root to API methods. If is stated — APIReferences can divide the command into the reference and search for it more accurately. Also, you could use it in templates. More info in the **Commands and Endpoint Prefixes** section. Default: `''`
+
+`endpoint_prefix_list`
+: *(optional)* The list of available endpoint prefixes which could be added to output. Default: `[]`
 
 `tags`
 :   *(optional)* list of HTML tags which will be parsed out from the page and searched for ids. Default: `['h1', 'h2', 'h3', 'h4']`
@@ -351,6 +358,9 @@ The list of options and some default values differ for each mode.
 
 `endpoint_prefix`
 :   *(optional)* The endpoint prefix from the server root to API methods. If is stated — APIReferences can divide the command into the reference and search for it more accurately. Also, you could use it in templates. More info in the **Commands and Endpoint Prefixes** section. Default: `''`
+
+`endpoint_prefix_list`
+: *(optional)* The list of available endpoint prefixes which could be added to output. Default: `[]`
 
 `tags`
 :   *(optional)* list of HTML tags which will be parsed out from the page and searched for ids. Default: `['h1', 'h2', 'h3', 'h4']`
@@ -378,6 +388,9 @@ The list of options and some default values differ for each mode.
 `endpoint_prefix`
 :   *(optional)* The endpoint prefix from the server root to API methods. You may use it in output template. Default: `''`
 
+`endpoint_prefix_list`
+: *(optional)* The list of available endpoint prefixes which could be added to output. Default: `[]`
+
 `login`
 :    *(optional)* Login for basic authentication if present on your API site.
 
@@ -400,6 +413,9 @@ The list of options and some default values differ for each mode.
 
 `endpoint_prefix`
 :   *(optional)* The endpoint prefix from the server root to API methods. You may use it in output template. Default: `''`
+
+`endpoint_prefix_list`
+: *(optional)* The list of available endpoint prefixes which could be added to output. Default: `[]`
 
 `login`
 :    *(optional)* Login for basic authentication if present on your API site.

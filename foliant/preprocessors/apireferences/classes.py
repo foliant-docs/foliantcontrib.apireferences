@@ -62,7 +62,8 @@ class Reference:
             'prefix': '',
             'verb': '',
             'command': '',  # always root
-            'endpoint_prefix': ''  # always root; note: endpoint_prefix is only set by API object
+            'endpoint_prefix': '' , # always root; note: endpoint_prefix is only set by API object
+            'endpoint_prefix_list': []
         }
         self._init_from_dict(kwargs)
 
@@ -139,6 +140,17 @@ class Reference:
         return self.command.split('?')[0]
 
 
+def find_endpoint_prefix(endpoint_prefix_list, endpoint_prefix_tmp, command) -> str:
+    for prefix in endpoint_prefix_list:
+        logger.debug(f"splitted command: {command.split('/')}")
+        # if prefix.strip("/") in ref_dict['command'].split('/'):
+        if command.startswith(prefix):
+            endpoint_prefix_tmp = prefix
+            logger.debug(f"New prefix: {endpoint_prefix_tmp}")
+            break
+    return endpoint_prefix_tmp
+
+
 class APIBase:
     """
     API base class.
@@ -196,6 +208,7 @@ class APIByTagContent(APIBase):
                  content_template: str,
                  trim_query: bool = True,
                  endpoint_prefix: str = '',
+                 endpoint_prefix_list: list = [],
                  tags: list = DEFAULT_TAG_LIST,
                  login: str or None = None,
                  password: str or None = None):
@@ -205,6 +218,8 @@ class APIByTagContent(APIBase):
         self.tags = tags
         self.registry = {}
         self.endpoint_prefix = endpoint_prefix
+        self.endpoint_prefix_tmp = endpoint_prefix
+        self.endpoint_prefix_list = endpoint_prefix_list
         self.login = login
         self.password = password
 
@@ -329,6 +344,7 @@ class APIByTagContent(APIBase):
         if with_ep and self.endpoint_prefix:
             ref_dict['command'] = api_ref.command_with_prefix
 
+        self.endpoint_prefix_tmp = find_endpoint_prefix(self.endpoint_prefix_list, self.endpoint_prefix_tmp, ref_dict['command'])
         result = self.content_template.format(**ref_dict)
         logger.debug(f'Generated content: {result}')
         return result
@@ -349,6 +365,7 @@ class APIByAnchor(APIBase):
                  trim_query: bool = True,
                  anchor_converter: str = 'pandoc',
                  endpoint_prefix: str = '',
+                 endpoint_prefix_list: list = [],
                  tags: list = DEFAULT_TAG_LIST,
                  login: str or None = None,
                  password: str or None = None):
@@ -359,6 +376,8 @@ class APIByAnchor(APIBase):
         self.tags = tags
         self.registry = {}
         self.endpoint_prefix = endpoint_prefix
+        self.endpoint_prefix_tmp = endpoint_prefix
+        self.endpoint_prefix_list = endpoint_prefix_list
         self.login = login
         self.password = password
 
@@ -432,17 +451,17 @@ class APIByAnchor(APIBase):
 
         anchor = self.generate_anchor_by_reference(ref, False)
         if self.is_in_registry(anchor):
-            logger.debug(f'Found anchor "{anchor}"')
+            logger.debug(f'Found anchor by reference"{anchor}"')
             return anchor
         elif self.command_in_anchor:
             anchor = self.generate_anchor_by_reference(ref, False, True)
             if self.is_in_registry(anchor):
-                logger.debug(f'Found anchor "{anchor}"')
+                logger.debug(f'Found anchor without leading slash"{anchor}"')
                 return anchor
             elif self.endpoint_prefix:
                 anchor = self.generate_anchor_by_reference(ref, True)
                 if self.is_in_registry(anchor):
-                    logger.debug(f'Found anchor "{anchor}"')
+                    logger.debug(f'Found anchor with endpoint prefix"{anchor}"')
                     return anchor
 
         logger.debug('Not found')
@@ -493,6 +512,7 @@ class APIByAnchor(APIBase):
         if with_ep and self.endpoint_prefix:
             ref_dict['command'] = api_ref.command_with_prefix
 
+        self.endpoint_prefix_tmp = find_endpoint_prefix(self.endpoint_prefix_list, self.endpoint_prefix_tmp, ref_dict['command'])
         anchor_source = self.anchor_template.format(**ref_dict)
         result = to_id(anchor_source, self.anchor_converter)
         logger.debug(f'Generated anchor: {result}')
@@ -516,12 +536,15 @@ class APIGenAnchor(APIBase):
                  anchor_template: str,
                  trim_query: bool = True,
                  anchor_converter: str = 'pandoc',
-                 endpoint_prefix: str = ''):
+                 endpoint_prefix: str = '',
+                 endpoint_prefix_list = []):
         super().__init__(name, url)
         self.anchor_template = anchor_template
         self.trim_query = trim_query
         self.anchor_converter = anchor_converter
         self.endpoint_prefix = endpoint_prefix
+        self.endpoint_prefix_tmp = endpoint_prefix
+        self.endpoint_prefix_list = endpoint_prefix_list
 
     def get_link_by_reference(self, ref: Reference) -> str:
         """
@@ -567,6 +590,7 @@ class APIGenAnchor(APIBase):
         ref_dict = api_ref.__dict__
         if self.trim_query:
             ref_dict['command'] = api_ref.trim_query
+        self.endpoint_prefix_tmp = find_endpoint_prefix(self.endpoint_prefix_list, self.endpoint_prefix_tmp, ref_dict['command'])
         anchor_source = self.anchor_template.format(**ref_dict)
         return to_id(anchor_source, self.anchor_converter)
 
@@ -593,6 +617,7 @@ class APIBySwagger(APIBase):
         anchor_template: str = DEFAULT_ANCHOR_TEMPLATE,
         anchor_converter: str = 'no_transform',
         endpoint_prefix: str = '',
+        endpoint_prefix_list: list = [],
         login: str or None = None,
         password: str or None = None,
     ):
@@ -601,6 +626,8 @@ class APIBySwagger(APIBase):
         self.anchor_template = anchor_template
         self.anchor_converter = anchor_converter
         self.endpoint_prefix = endpoint_prefix
+        self.endpoint_prefix_tmp = endpoint_prefix
+        self.endpoint_prefix_list = endpoint_prefix_list
         self.login = login
         self.password = password
         self.spec_path = spec
@@ -750,7 +777,7 @@ class APIBySwagger(APIBase):
                 for k, v in self.registry[key].items():
                     api_ref.__setattr__(k, v)
                 return api_ref
-
+        self.endpoint_prefix_tmp = find_endpoint_prefix(self.endpoint_prefix_list, self.endpoint_prefix_tmp, api_ref.command)
         logger.debug('Not found')
         raise ReferenceNotFoundError(f'Reference {ref.source} not found in API "{self.name}"')
 
