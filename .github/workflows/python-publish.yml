@@ -22,6 +22,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.8", "3.9"]
+
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -38,7 +39,6 @@ jobs:
           python3 -m unittest discover
   publish:
     needs: test
-    if: needs.test.status == 'success'
     runs-on: ubuntu-latest
     steps:
       - run: echo 'The test workflow passed'
