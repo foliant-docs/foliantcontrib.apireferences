@@ -40,7 +40,6 @@ jobs:
   publish:
     needs: test
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - run: echo 'The test workflow passed'
       - uses: actions/checkout@v3
