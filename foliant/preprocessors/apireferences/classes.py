@@ -569,12 +569,13 @@ class APIGenAnchor(APIBase):
     def __init__(self,
                  name: str,
                  url: str,
+                 multiproject: bool,
                  anchor_template: str,
                  trim_query: bool = True,
                  anchor_converter: str = 'pandoc',
                  endpoint_prefix: str = '',
                  endpoint_prefix_list = []):
-        super().__init__(name, url)
+        super().__init__(name, url, multiproject)
         self.anchor_template = anchor_template
         self.trim_query = trim_query
         self.anchor_converter = anchor_converter
