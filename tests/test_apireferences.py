@@ -59,6 +59,7 @@ class TestAPIReferences(TestCase):
             'API': {
                 'H2H3-Api': {
                     'url': 'http://example.com/',
+                    'multiproject': False,
                     'mode': 'find_by_tag_content',
                     'content_template': '{verb} {command}',
                     'endpoint_prefix': '/api/v2'
@@ -152,6 +153,7 @@ class TestAPIReferences(TestCase):
                 'Gen-Api': {
                     'url': 'http://example.com/',
                     'mode': 'generate_anchor',
+                    'multiproject': False,
                     'anchor_template': '{verb} {command}',
                 }
             }
@@ -173,6 +175,7 @@ class TestAPIReferences(TestCase):
                 'Gen-Api': {
                     'url': 'http://example.com/',
                     'mode': 'generate_anchor',
+                    'multiproject': False,
                     'anchor_template': '{foo} {bar}',
                 }
             }
@@ -257,12 +260,14 @@ class TestAPIReferences(TestCase):
                 },
                 'Swagger-API': {
                     'url': 'http://example.com/',
+                    'multiproject': False,
                     'mode': 'find_for_swagger',
                     'spec': rel_name('data/swagger.json'),
                     'endpoint_prefix': '/api/v2'
                 },
                 'Gen-Api': {
                     'url': 'http://example.com/',
+                    'multiproject': False,
                     'mode': 'generate_anchor',
                     'anchor_template': '{verb} {command}',
                 }

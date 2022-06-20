@@ -26,6 +26,7 @@ class TestGetApi(TestCase):
             'mode': 'generate_anchor',
             'name': 'MyAPI',
             'url': 'https://example.com',
+            'multiproject': False,
             'anchor_template': '{command}'
         }
         api = get_api(options)

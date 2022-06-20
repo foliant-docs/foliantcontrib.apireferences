@@ -14,6 +14,7 @@ class TestAPIGenAnchor(TestCase):
         api = APIGenAnchor(
             name='Test',
             url='http://example.com/',
+            multiproject=False,
             anchor_template='user content {verb} {command}',
         )
         ref = Reference(verb='GET', command='/user/info')
@@ -24,6 +25,7 @@ class TestAPIGenAnchor(TestCase):
         api = APIGenAnchor(
             name='Test',
             url='http://example.com/',
+            multiproject=False,
             anchor_template='user content {verb} {command}',
         )
         ref = Reference(verb='GET', command='/user/info?type=common,secret')
@@ -34,6 +36,7 @@ class TestAPIGenAnchor(TestCase):
         api = APIGenAnchor(
             name='Test',
             url='http://example.com/',
+            multiproject=False,
             anchor_template='{foo} {verb} {command}',
         )
         ref = Reference(verb='GET', command='/user/info', foo='bar')
@@ -44,6 +47,7 @@ class TestAPIGenAnchor(TestCase):
         api = APIGenAnchor(
             name='Test',
             url='http://example.com/',
+            multiproject=False,
             anchor_template='{foo} {bar} {baz}',
         )
         ref = Reference(foo='foo', bar='bar', baz='baz')
@@ -54,6 +58,7 @@ class TestAPIGenAnchor(TestCase):
         api = APIGenAnchor(
             name='Test',
             url='http://example.com/',
+            multiproject=False,
             anchor_template='{verb} {endpoint_prefix}{command}',
             endpoint_prefix='/api/v2'
         )
@@ -65,6 +70,7 @@ class TestAPIGenAnchor(TestCase):
         api = APIGenAnchor(
             name='Test',
             url='http://example.com/',
+            multiproject=False,
             anchor_template='{verb} {command}',
             endpoint_prefix='/api/v2',
             anchor_converter='slate'
@@ -77,6 +83,7 @@ class TestAPIGenAnchor(TestCase):
         api = APIGenAnchor(
             name='Test',
             url='http://example.com/',
+            multiproject=False,
             anchor_template='{foo} {bar} {baz}',
         )
         ref = Reference(foo='foo', bar='bar', baz='baz')
