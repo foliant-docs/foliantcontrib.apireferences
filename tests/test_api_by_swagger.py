@@ -22,6 +22,7 @@ class TestAPIBySwagger(TestCase):
             api = APIBySwagger(
                 name='Test',
                 url='http://example.com/',
+                multiproject=False,
                 spec='http://example.com/test.json',
                 anchor_template='/{tag}/{operation_id}',
             )
@@ -50,6 +51,7 @@ class TestAPIBySwagger(TestCase):
             api = APIBySwagger(
                 name='Test',
                 url='http://example.com/',
+                multiproject=False,
                 spec='http://example.com/test.json',
                 anchor_template='/{tag}/{operation_id}',
                 login='login',
@@ -77,6 +79,7 @@ class TestAPIBySwagger(TestCase):
         api = APIBySwagger(
             name='Test',
             url='http://example.com/',
+            multiproject=False,
             spec=rel_name('data/swagger.json'),
             anchor_template='/{tag}/{operation_id}',
         )
@@ -101,6 +104,7 @@ class TestAPIBySwagger(TestCase):
         api = APIBySwagger(
             name='Test',
             url='http://example.com/',
+            multiproject=False,
             spec=rel_name('data/swagger.json'),
             anchor_template='/{tag}/{operation_id}',
         )
@@ -114,6 +118,7 @@ class TestAPIBySwagger(TestCase):
         api = APIBySwagger(
             name='Test',
             url='http://example.com/',
+            multiproject=False,
             spec=rel_name('data/swagger.json'),
             anchor_template='/{tag}/{operation_id}',
             endpoint_prefix='/api/v2'
@@ -145,6 +150,7 @@ class TestAPIBySwagger(TestCase):
         api = APIBySwagger(
             name='Test',
             url='http://example.com/',
+            multiproject=False,
             spec=rel_name('data/swagger.json'),
             anchor_template='/{tag}/{operation_id}',
         )
@@ -157,6 +163,7 @@ class TestAPIBySwagger(TestCase):
         api = APIBySwagger(
             name='Test',
             url='http://example.com/',
+            multiproject=False,
             spec=rel_name('data/swagger.json'),
             anchor_template='/{tag}/{operation_id}',
         )
@@ -170,6 +177,7 @@ class TestAPIBySwagger(TestCase):
         api = APIBySwagger(
             name='Test',
             url='http://example.com/',
+            multiproject=False,
             spec=rel_name('data/swagger.json'),
             anchor_template='/{tag}/{operation_id}',
         )
@@ -183,6 +191,7 @@ class TestAPIBySwagger(TestCase):
         api = APIBySwagger(
             name='Test',
             url='http://example.com/',
+            multiproject=False,
             spec=rel_name('data/swagger.json'),
             anchor_template='/{verb}/{operation_id}/{command}',
         )
@@ -196,6 +205,7 @@ class TestAPIBySwagger(TestCase):
         api = APIBySwagger(
             name='Test',
             url='http://example.com/',
+            multiproject=False,
             spec=rel_name('data/swagger.json'),
             anchor_template='/{foo}/{operation_id}/{command}',
         )

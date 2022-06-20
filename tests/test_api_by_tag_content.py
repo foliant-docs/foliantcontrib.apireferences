@@ -22,6 +22,7 @@ class TestAPIByTagContent(TestCase):
             api = APIByTagContent(
                 name='Test',
                 url='http://example.com/',
+                multiproject=False,
                 content_template='{verb} {command}',
                 tags=['h1', 'h2', 'h3']
             )
@@ -43,6 +44,7 @@ class TestAPIByTagContent(TestCase):
             api = APIByTagContent(
                 name='Test',
                 url='http://example.com/',
+                multiproject=False,
                 content_template='{verb} {command}',
                 tags=['a']
             )
@@ -62,6 +64,7 @@ class TestAPIByTagContent(TestCase):
             api = APIByTagContent(
                 name='Test',
                 url='http://example.com/',
+                multiproject=False,
                 content_template='{verb} {command}',
                 tags=['h1', 'h2', 'h3'],
                 login='login',
@@ -85,6 +88,7 @@ class TestAPIByTagContent(TestCase):
             return APIByTagContent(
                 name='Test',
                 url='http://example.com/',
+                multiproject=False,
                 content_template='{verb} {command}',
                 tags=['h1', 'h2', 'h3']
             )
@@ -146,6 +150,7 @@ class TestAPIByTagContent(TestCase):
             api = APIByTagContent(
                 name='Test',
                 url='http://example.com/',
+                multiproject=False,
                 content_template='{foo} {bar}',
                 tags=['h1', 'h2', 'h3']
             )
@@ -202,6 +207,7 @@ class TestAPIByTagContent(TestCase):
             api = APIByTagContent(
                 name='Test',
                 url='http://example.com/',
+                multiproject=False,
                 content_template='{verb} {command} {foo}',
                 tags=['h1', 'h2', 'h3']
             )
