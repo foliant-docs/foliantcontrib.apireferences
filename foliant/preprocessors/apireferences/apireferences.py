@@ -43,7 +43,8 @@ class Preprocessor(BasePreprocessorExt):
         'targets': [],
         'trim_if_targets': [],
         'API': {},
-        'warning_level': 2
+        'warning_level': 2,
+        'use_multiproject_mode': True
     }
 
     def __init__(self, *args, **kwargs):
@@ -264,7 +265,7 @@ class Preprocessor(BasePreprocessorExt):
         return processed
 
     def check_if_multiproject(self):
-        if '.multiprojectcache' in self.working_dir.parts:
+        if '.multiprojectcache' in self.working_dir.parts and self.options['use_multiproject_mode']:
             self.logger.debug('Applying apireferences in multiproject mode')
             return True
         else:
