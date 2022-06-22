@@ -43,7 +43,8 @@ class Preprocessor(BasePreprocessorExt):
         'targets': [],
         'trim_if_targets': [],
         'API': {},
-        'warning_level': 2
+        'warning_level': 2,
+        'use_multiproject_mode': True
     }
 
     def __init__(self, *args, **kwargs):
@@ -87,6 +88,7 @@ class Preprocessor(BasePreprocessorExt):
                     required=['url', 'mode']
                 )
                 api_options['name'] = api
+                api_options['multiproject'] = self.check_if_multiproject()
                 api_obj = get_api(api_options)
                 self.apis[api.lower()] = api_obj
             except (error.HTTPError, error.URLError) as e:
@@ -262,8 +264,17 @@ class Preprocessor(BasePreprocessorExt):
 
         return processed
 
+    def check_if_multiproject(self):
+        if '.multiprojectcache' in self.working_dir.parts and self.options['use_multiproject_mode']:
+            self.logger.debug('Applying apireferences in multiproject mode')
+            return True
+        else:
+            return False
+
+
     def apply(self):
         self.logger.info('Applying preprocessor')
+        self.check_if_multiproject()
         if not self.options['targets'] or\
                 self.context['target'] in self.options['targets']:
             self._process_all_files(self.process_links, 'Converting references')

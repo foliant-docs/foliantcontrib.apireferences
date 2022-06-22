@@ -22,6 +22,7 @@ class TestAPIByAnchor(TestCase):
             api = APIByAnchor(
                 name='Test',
                 url='http://example.com/',
+                multiproject=False,
                 anchor_template='user content {verb} {command}',
                 tags=['h1', 'h2', 'h3']
             )
@@ -41,6 +42,7 @@ class TestAPIByAnchor(TestCase):
             api = APIByAnchor(
                 name='Test',
                 url='http://example.com/',
+                multiproject=False,
                 anchor_template='a {verb} {command}',
                 tags=['a']
             )
@@ -58,6 +60,7 @@ class TestAPIByAnchor(TestCase):
             api = APIByAnchor(
                 name='Test',
                 url='http://example.com/',
+                multiproject=False,
                 anchor_template='user content {verb} {command}',
                 tags=['h1', 'h2', 'h3'],
                 login='login',
@@ -79,6 +82,7 @@ class TestAPIByAnchor(TestCase):
             return APIByAnchor(
                 name='Test',
                 url='http://example.com/',
+                multiproject=False,
                 anchor_template='user content {verb} {command}',
                 tags=['h1', 'h2', 'h3']
             )
@@ -149,6 +153,7 @@ class TestAPIByAnchor(TestCase):
             api = APIByAnchor(
                 name='Test',
                 url='http://example.com/',
+                multiproject=False,
                 anchor_template='user content {foo} {bar}',
                 tags=['h1', 'h2', 'h3']
             )
@@ -205,6 +210,7 @@ class TestAPIByAnchor(TestCase):
             api = APIByAnchor(
                 name='Test',
                 url='http://example.com/',
+                multiproject=False,
                 anchor_template='user content {verb} {command} {foo}',
                 tags=['h1', 'h2', 'h3']
             )

@@ -1,5 +1,6 @@
 '''Helper classes for APIReferences preprocessor'''
-
+import json
+import os
 import re
 import ssl
 import sys
@@ -164,9 +165,11 @@ class APIBase:
 
     def __init__(self,
                  name: str,
-                 url: str):
+                 url: str,
+                 multiproject: bool):
         self.name = name
         self.url = url
+        self.multiproject = multiproject
 
     def __repr__(self):
         attrs = ', '.join(f'{k}={v}' for k, v in self.__dict__.items())
@@ -194,6 +197,7 @@ class APIBase:
         raise NotImplementedError()
 
 
+
 class APIByTagContent(APIBase):
     """
     API class which generates links based on tag content. It parses the url and
@@ -205,6 +209,7 @@ class APIByTagContent(APIBase):
     def __init__(self,
                  name: str,
                  url: str,
+                 multiproject: bool,
                  content_template: str,
                  trim_query: bool = True,
                  endpoint_prefix: str = '',
@@ -212,7 +217,7 @@ class APIByTagContent(APIBase):
                  tags: list = DEFAULT_TAG_LIST,
                  login: str or None = None,
                  password: str or None = None):
-        super().__init__(name, url)
+        super().__init__(name, url, multiproject)
         self.content_template = content_template
         self.trim_query = trim_query
         self.tags = tags
@@ -224,7 +229,22 @@ class APIByTagContent(APIBase):
         self.password = password
 
         self.command_in_content = 'command' in self.content_template
-        self.generate_registry()
+        self.check_registry()
+
+    def check_registry(self):
+        if self.multiproject:
+            registry_file = os.path.join('../', self.name + '.apirefregistry')
+            if os.path.isfile(registry_file):
+                with open(registry_file) as json_file:
+                    self.registry = json.load(json_file)
+                    logger.debug(f'Loaded registry:\n{self.registry}')
+            else:
+                self.generate_registry()
+                with open(registry_file, 'w') as file:
+                    file.write(json.dumps(self.registry))
+                logger.debug(f'Saved registry as : {registry_file}')
+        else:
+            self.generate_registry()
 
     def generate_registry(self):
         """
@@ -361,6 +381,7 @@ class APIByAnchor(APIBase):
     def __init__(self,
                  name: str,
                  url: str,
+                 multiproject: bool,
                  anchor_template: str,
                  trim_query: bool = True,
                  anchor_converter: str = 'pandoc',
@@ -369,7 +390,7 @@ class APIByAnchor(APIBase):
                  tags: list = DEFAULT_TAG_LIST,
                  login: str or None = None,
                  password: str or None = None):
-        super().__init__(name, url)
+        super().__init__(name, url, multiproject)
         self.anchor_template = anchor_template
         self.trim_query = trim_query
         self.anchor_converter = anchor_converter
@@ -382,7 +403,22 @@ class APIByAnchor(APIBase):
         self.password = password
 
         self.command_in_anchor = 'command' in self.anchor_template
-        self.generate_registry()
+        self.check_registry()
+
+    def check_registry(self):
+        if self.multiproject:
+            registry_file = os.path.join('../', self.name + '.apirefregistry')
+            if os.path.isfile(registry_file):
+                with open(registry_file) as json_file:
+                    self.registry = json.load(json_file)
+                    logger.debug(f'Loaded registry:\n{self.registry}')
+            else:
+                self.generate_registry()
+                with open(registry_file, 'w') as file:
+                    file.write(json.dumps(self.registry))
+                logger.debug(f'Saved registry as : {registry_file}')
+        else:
+            self.generate_registry()
 
     def generate_registry(self):
         """
@@ -533,12 +569,13 @@ class APIGenAnchor(APIBase):
     def __init__(self,
                  name: str,
                  url: str,
+                 multiproject: bool,
                  anchor_template: str,
                  trim_query: bool = True,
                  anchor_converter: str = 'pandoc',
                  endpoint_prefix: str = '',
                  endpoint_prefix_list = []):
-        super().__init__(name, url)
+        super().__init__(name, url, multiproject)
         self.anchor_template = anchor_template
         self.trim_query = trim_query
         self.anchor_converter = anchor_converter
@@ -612,6 +649,7 @@ class APIBySwagger(APIBase):
         self,
         name: str,
         url: str,
+        multiproject: bool,
         spec: str or PosixPath,
         trim_query: bool = True,
         anchor_template: str = DEFAULT_ANCHOR_TEMPLATE,
@@ -621,7 +659,7 @@ class APIBySwagger(APIBase):
         login: str or None = None,
         password: str or None = None,
     ):
-        super().__init__(name, url)
+        super().__init__(name, url, multiproject)
         self.trim_query = trim_query
         self.anchor_template = anchor_template
         self.anchor_converter = anchor_converter
@@ -634,7 +672,7 @@ class APIBySwagger(APIBase):
 
         self._load_spec(spec)
         self.registry = {}  # {VERB_path: ext_dict}
-        self.generate_registry()
+        self.check_registry()
 
     def _load_spec(self, spec_path: str or PosixPath):
         """
@@ -658,6 +696,21 @@ class APIBySwagger(APIBase):
             with open(spec_path, encoding='utf8') as f:
                 spec = f.read()
         self.spec = yaml.load(spec, yaml.Loader)
+
+    def check_registry(self):
+        if self.multiproject:
+            registry_file = os.path.join('../', self.name + '.apirefregistry')
+            if os.path.isfile(registry_file):
+                with open(registry_file) as json_file:
+                    self.registry = json.load(json_file)
+                    logger.debug(f'Loaded registry:\n{self.registry}')
+            else:
+                self.generate_registry()
+                with open(registry_file, 'w') as file:
+                    file.write(json.dumps(self.registry))
+                logger.debug(f'Saved registry as : {registry_file}')
+        else:
+            self.generate_registry()
 
     def generate_registry(self):
         """

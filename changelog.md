@@ -1,3 +1,7 @@
+# 1.0.5
+
+- New: `use_multiproject_mode` option (default: `True`) to use cached API registries in multiproject
+
 # 1.0.4
 
 -   New: `endpoint_prefix_list` option (default: `[]`) for every API class

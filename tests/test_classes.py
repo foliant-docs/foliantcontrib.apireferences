@@ -16,6 +16,7 @@ class TestGetApi(TestCase):
             'mode': 'find_by_tag_content',
             'name': 'MyAPI',
             'url': 'https://example.com',
+            'multiproject': False,
             'content_template': '{command}'
         }
         api = get_api(options)
@@ -25,6 +26,7 @@ class TestGetApi(TestCase):
             'mode': 'generate_anchor',
             'name': 'MyAPI',
             'url': 'https://example.com',
+            'multiproject': False,
             'anchor_template': '{command}'
         }
         api = get_api(options)
@@ -34,6 +36,7 @@ class TestGetApi(TestCase):
             'mode': 'find_by_anchor',
             'name': 'MyAPI',
             'url': 'https://example.com',
+            'multiproject': False,
             'anchor_template': '{command}',
         }
         api = get_api(options)
@@ -43,6 +46,7 @@ class TestGetApi(TestCase):
             'mode': 'find_for_swagger',
             'name': 'MyAPI',
             'url': 'https://example.com',
+            'multiproject': False,
             'spec': rel_name('data/swagger.json')
         }
         api = get_api(options)
@@ -52,6 +56,7 @@ class TestGetApi(TestCase):
             'mode': 'find_for_redoc',
             'name': 'MyAPI',
             'url': 'https://example.com',
+            'multiproject': False,
             'spec': rel_name('data/swagger.json')
         }
         api = get_api(options)
