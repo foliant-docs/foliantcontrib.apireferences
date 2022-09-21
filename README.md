@@ -889,7 +889,7 @@ APIReferences uses regular expressions to capture *references* to API methods in
 The default reg-ex is:
 
 ```re
-`((?P<prefix>[\w-]+):\s*)?(?P<verb>OPTIONS|GET|HEAD|POST|PUT|DELETE|TRACE|CONNECT|PATCH|LINK|UNLINK)\s+(?P<command>\S+)`
+`(\s*(?P<prefix>[\w-]+):\s*)?(?P<verb>OPTIONS|GET|HEAD|POST|PUT|DELETE|TRACE|CONNECT|PATCH|LINK|UNLINK)\s+(?P<command>[^`]+)\s*`
 ```
 
 This expression accepts references like these:
@@ -907,7 +907,7 @@ For example, if you want to capture ONLY references with prefixes, you may use t
 preprocessors:
   - apireferences:
       reference:
-      - regex: '((?P<prefix>[\w-]+):\s*)(?P<verb>POST|GET|PUT|UPDATE|DELETE)\s+(?P<command>\S+)`'
+      - regex: '(\s*(?P<prefix>[\w-]+):\s*)(?P<verb>POST|GET|PUT|UPDATE|DELETE)\s+(?P<command>[^`]+)`\s*'
 ```
 
 > This example is for illustrative purposes only. You can achieve the same goal by just switching on the `only_with_prefixes` option.
