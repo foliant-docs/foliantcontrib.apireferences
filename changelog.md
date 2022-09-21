@@ -1,3 +1,7 @@
+# 1.0.6
+
+- Fix: now the preprocessor works correctly with initial and last spaces in input references like ``` ` Client-API: GET user/info ` ```
+
 # 1.0.5
 
 - New: `use_multiproject_mode` option (default: `True`) to use cached API registries in multiproject
