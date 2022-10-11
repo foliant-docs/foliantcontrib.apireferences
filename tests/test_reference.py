@@ -26,14 +26,6 @@ class TestReference(TestCase):
         self.assertEqual(ref.verb, 'GET')
         self.assertEqual(ref.command, '/user/status')
 
-    def test_source_with_backtick_spaces(self):
-        source = '` MyAPI: GET /user/status `'
-        pattern = re.compile(DEFAULT_REF_REGEX)
-        match = pattern.search(source)
-        ref = Reference()
-        ref.init_from_match(match)
-        self.assertEqual(ref.source, source)
-
     def test_command_and_ep_slashes(self):
         ref = Reference(
             source='`MyAPI: GET /user/status`',
