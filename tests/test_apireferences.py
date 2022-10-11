@@ -4,6 +4,7 @@ import os
 import sys
 
 from foliant.preprocessors.apireferences.classes import HTTP_VERBS
+from foliant.preprocessors.apireferences.apireferences import DEFAULT_REF_REGEX
 from foliant_test.preprocessor import PreprocessorTestFramework
 from foliant_test.preprocessor import unpack_dir
 from foliant_test.preprocessor import unpack_file_dict
@@ -623,4 +624,62 @@ class TestAPIReferences(TestCase):
             ),
         )
 
+        self.assertEqual(0, count_output_warnings(self.ptf.capturedOutput))
+
+    def test_reference_with_backtick_spaces(self):
+        pattern = DEFAULT_REF_REGEX
+        self.ptf.options = {
+            'reference': [
+                {
+                    'regex': pattern
+                }
+            ],
+            'API': {
+                'H2H3-Api': {
+                    'url': 'http://example.com/',
+                    'mode': 'find_by_anchor',
+                    'anchor_template': 'user content {verb} {command}',
+                    'endpoint_prefix': '/api/v2'
+                }
+            }
+        }
+
+        self.run_with_mock_url(
+            'data/simple_h2h3.html',
+            input_mapping={
+                'input.md': '` GET /user/login `'
+            },
+            expected_mapping={
+                'input.md': '[GET /user/login](http://example.com/#user-content-get-userlogin)'
+            }
+        )
+        self.assertEqual(0, count_output_warnings(self.ptf.capturedOutput))
+
+    def test_reference_with_backtick_spaces_as_a_list_item(self):
+        pattern = DEFAULT_REF_REGEX
+        self.ptf.options = {
+            'reference': [
+                {
+                    'regex': pattern
+                }
+            ],
+            'API': {
+                'H2H3-Api': {
+                    'url': 'http://example.com/',
+                    'mode': 'find_by_anchor',
+                    'anchor_template': 'user content {verb} {command}',
+                    'endpoint_prefix': '/api/v2'
+                }
+            }
+        }
+
+        self.run_with_mock_url(
+            'data/simple_h2h3.html',
+            input_mapping={
+                'input.md': '- ` GET /user/login `'
+            },
+            expected_mapping={
+                'input.md': '- [GET /user/login](http://example.com/#user-content-get-userlogin)'
+            }
+        )
         self.assertEqual(0, count_output_warnings(self.ptf.capturedOutput))

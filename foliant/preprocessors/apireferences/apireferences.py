@@ -17,7 +17,7 @@ from foliant.preprocessors.utils.preprocessor_ext import allow_fail
 from foliant.utils import output
 
 
-DEFAULT_REF_REGEX = r'`(\s*(?P<prefix>[\w-]+):\s*)?' +\
+DEFAULT_REF_REGEX = r'`\s*((?P<prefix>[\w-]+):\s*)?' +\
                     rf'(?P<verb>{"|".join(HTTP_VERBS)})\s+' +\
                     r'(?P<command>[^`]+)\s*`'
 DEFAULT_IGNORING_PREFIX = 'Ignore'

@@ -1,3 +1,7 @@
+# 1.0.7
+
+- Fix: small fix for proper work when input reference is a list item and have initial and last spaces inside
+
 # 1.0.6
 
 - Fix: now the preprocessor works correctly with initial and last spaces in input references like ``` ` Client-API: GET user/info ` ```
