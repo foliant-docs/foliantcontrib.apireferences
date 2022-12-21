@@ -8,7 +8,7 @@ Preprocessor replaces API *reference*s in markdown files with links to the corre
 
 ## What is it for?
 
-Say, you have API documentation hosted at the url http://example.com/api-docs
+Say, you have API or DB documentation hosted at the url http://example.com/api-docs
 
 It may be a [Swagger UI](https://swagger.io/tools/swagger-ui/) website or just some static one-page site (like [Slate](https://github.com/slatedocs/slate)).
 
