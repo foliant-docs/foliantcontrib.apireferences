@@ -607,6 +607,9 @@ To find out user's status use **[GET /user/status](http://example.com/api#api-me
 
 This mode is convenient when there's no way to determine tag ID based on the reference, for example, when ids are random strings.
 
+> It's not recommended to use `find_by_tag_content` mode for API websites that have content with the same names.
+> In that case a reference may be replaced by an incorrect link.
+
 Let's assume that your API website code looks like this:
 
 ```html
