@@ -44,7 +44,8 @@ class Preprocessor(BasePreprocessorExt):
         'trim_if_targets': [],
         'API': {},
         'warning_level': 2,
-        'use_multiproject_mode': True
+        'use_multiproject_mode': True,
+        'apiref_registry_url': None
     }
 
     def __init__(self, *args, **kwargs):
@@ -89,6 +90,7 @@ class Preprocessor(BasePreprocessorExt):
                 )
                 api_options['name'] = api
                 api_options['multiproject'] = self.check_if_multiproject()
+                api_options['apiref_registry'] = self.options.get('apiref_registry', None)
                 api_obj = get_api(api_options)
                 self.apis[api.lower()] = api_obj
             except (error.HTTPError, error.URLError) as e:
