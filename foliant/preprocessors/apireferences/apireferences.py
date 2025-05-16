@@ -1,9 +1,11 @@
 '''APIReferences preprocessor for Foliant. Replaces API references with links to API
 docs'''
+import json
 import re
 
 from collections import OrderedDict
 from urllib import error
+from urllib.request import urlopen
 
 from .classes import BadConfigError
 from .classes import HTTP_VERBS
@@ -59,6 +61,16 @@ class Preprocessor(BasePreprocessorExt):
 
         self.apis = OrderedDict()
         self.default_api = None
+        self.apiref_registry= False
+        apiref_registry_url = self.options.get('apiref_registry_url', False)
+        if apiref_registry_url:
+            try:
+                with urlopen(apiref_registry_url) as response:
+                        json_data = json.loads(response.read().decode('utf-8'))
+                        self.apiref_registry = json_data
+            except Exception as e:
+                raise f"Error when uploading apiref registry: {e}"
+
         self.set_apis()
 
         self.counter = 0
@@ -90,7 +102,7 @@ class Preprocessor(BasePreprocessorExt):
                 )
                 api_options['name'] = api
                 api_options['multiproject'] = self.check_if_multiproject()
-                api_options['apiref_registry'] = self.options.get('apiref_registry', None)
+                api_options['apiref_registry'] = self.apiref_registry
                 api_obj = get_api(api_options)
                 self.apis[api.lower()] = api_obj
             except (error.HTTPError, error.URLError) as e:

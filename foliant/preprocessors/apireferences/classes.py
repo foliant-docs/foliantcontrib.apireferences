@@ -198,16 +198,6 @@ class APIBase:
         """
         raise NotImplementedError()
 
-    def get_apiref_registry(self, url: str):
-        try:
-            with urlopen(url) as response:
-                json_data = json.loads(response.read().decode('utf-8'))
-                return json_data
-
-        except Exception as e:
-            raise f"Error when uploading JSON: {e}"
-
-
 
 class APIByTagContent(APIBase):
     """
@@ -246,7 +236,7 @@ class APIByTagContent(APIBase):
 
     def check_registry(self):
         if self.apiref_registry:
-            self.registry = self.get_apiref_registry(self.apiref_registry)
+            self.registry = self.apiref_registry
         elif self.multiproject:
             registry_file = os.path.join('../', self.name + '.apirefregistry')
             if os.path.isfile(registry_file):
@@ -424,7 +414,7 @@ class APIByAnchor(APIBase):
 
     def check_registry(self):
         if self.apiref_registry:
-            self.registry = self.get_apiref_registry(self.apiref_registry)
+            self.registry = self.apiref_registry
         elif self.multiproject:
             registry_file = os.path.join('../', self.name + '.apirefregistry')
             if os.path.isfile(registry_file):
@@ -721,7 +711,7 @@ class APIBySwagger(APIBase):
 
     def check_registry(self):
         if self.apiref_registry:
-            self.registry = self.get_apiref_registry(self.apiref_registry)
+            self.registry = self.apiref_registry
         elif self.multiproject:
             registry_file = os.path.join('../', self.name + '.apirefregistry')
             if os.path.isfile(registry_file):
