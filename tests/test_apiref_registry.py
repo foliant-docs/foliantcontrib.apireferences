@@ -110,7 +110,7 @@ class TestAPIRegistry(TestCase):
             )
 
     def test_multiple_apis_with_registry(self):
-        """The text of the operation of several APIs with a common registry"""
+        """The test of the operation of several APIs with a common registry"""
         self.ptf.options = {
             'apiref_registry_url': f'http://localhost:{self.port}/data.json',
             'API': {
@@ -139,7 +139,7 @@ class TestAPIRegistry(TestCase):
         )
 
     def test_registry_with_multiproject_mode(self):
-        """The text of the registry operation in multiproject mode"""
+        """The test of the registry operation in multiproject mode"""
         self.ptf.options = {
             'apiref_registry_url': f'http://localhost:{self.port}/data.json',
             'use_multiproject_mode': True,
@@ -188,7 +188,7 @@ class TestAPIRegistry(TestCase):
     #     )
 
     def test_registry_with_generate_anchor_mode(self):
-        """The text of how the registry works with the API in generate_anchor mode"""
+        """The test of how the registry works with the API in generate_anchor mode"""
         self.ptf.options = {
             'apiref_registry_url': f'http://localhost:{self.port}/data.json',
             'API': {
