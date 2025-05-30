@@ -236,7 +236,7 @@ class APIByTagContent(APIBase):
 
     def check_registry(self):
         if self.apiref_registry:
-            self.registry = self.apiref_registry
+            self.registry = self.apiref_registry[self.name]
         elif self.multiproject:
             registry_file = os.path.join('../', self.name + '.apirefregistry')
             if os.path.isfile(registry_file):
@@ -398,6 +398,7 @@ class APIByAnchor(APIBase):
                  apiref_registry: str or None = None,
                  ):
         super().__init__(name, url, multiproject, apiref_registry)
+        self.name = name
         self.anchor_template = anchor_template
         self.trim_query = trim_query
         self.anchor_converter = anchor_converter
@@ -414,7 +415,7 @@ class APIByAnchor(APIBase):
 
     def check_registry(self):
         if self.apiref_registry:
-            self.registry = self.apiref_registry
+            self.registry = self.apiref_registry[self.name]
         elif self.multiproject:
             registry_file = os.path.join('../', self.name + '.apirefregistry')
             if os.path.isfile(registry_file):
@@ -711,7 +712,7 @@ class APIBySwagger(APIBase):
 
     def check_registry(self):
         if self.apiref_registry:
-            self.registry = self.apiref_registry
+            self.registry = self.apiref_registry[self.name]
         elif self.multiproject:
             registry_file = os.path.join('../', self.name + '.apirefregistry')
             if os.path.isfile(registry_file):

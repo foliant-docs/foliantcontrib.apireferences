@@ -64,12 +64,8 @@ class Preprocessor(BasePreprocessorExt):
         self.apiref_registry= False
         apiref_registry_url = self.options.get('apiref_registry_url', False)
         if apiref_registry_url:
-            try:
-                with urlopen(apiref_registry_url) as response:
-                        json_data = json.loads(response.read().decode('utf-8'))
-                        self.apiref_registry = json_data
-            except Exception as e:
-                raise f"Error when uploading apiref registry: {e}"
+            with urlopen(apiref_registry_url) as response:
+                self.apiref_registry = json.loads(response.read().decode('utf-8'))
 
         self.set_apis()
 
