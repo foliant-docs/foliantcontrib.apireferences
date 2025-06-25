@@ -36,7 +36,6 @@ class WrongModeError(Exception):
     '''Exception which raises when user requested wrong API mode'''
     pass
 
-
 class BadConfigError(Exception):
     '''Exception which raises when API configuration is incorrect'''
     pass
@@ -45,7 +44,6 @@ class BadConfigError(Exception):
 class ReferenceNotFoundError(Exception):
     '''Exception which raises when reference is not found in API'''
     pass
-
 
 class Reference:
     '''
@@ -232,16 +230,6 @@ class APIByTagContent(APIBase):
         self.password = password
         self.command_in_content = 'command' in self.content_template
         self.check_registry()
-
-        if max_endpoint_prefix and endpoint_prefix:
-            raise RuntimeError(
-                f"Conflicting settings: you cannot use both endpoint_prefix '{endpoint_prefix}' and "
-                f"max_endpoint_prefix: true at the same time. "
-                f"Please choose one of these options. "
-            )
-
-        if self.max_endpoint_prefix and not self.endpoint_prefix_list:
-            logger.warning("max_endpoint_prefix is set to True, but endpoint_prefix_list is empty")
 
     def check_registry(self):
         if self.multiproject:
@@ -451,16 +439,6 @@ class APIByAnchor(APIBase):
         self.password = password
         self.command_in_anchor = 'command' in self.anchor_template
         self.check_registry()
-
-        if max_endpoint_prefix and endpoint_prefix:
-            raise RuntimeError(
-                f"Conflicting settings: you cannot use both endpoint_prefix '{endpoint_prefix}' and "
-                f"max_endpoint_prefix: true at the same time. "
-                f"Please choose one of these options. "
-            )
-
-        if self.max_endpoint_prefix and not self.endpoint_prefix_list:
-            logger.warning("max_endpoint_prefix is set to True, but endpoint_prefix_list is empty")
 
     def check_registry(self):
         if self.multiproject:
@@ -950,12 +928,25 @@ def get_args_dict(class_, options: Options) -> dict:
     """
     Filter from options all keys which are not in class_.__init__ method
     Also check for all required arguments, otherwise raise BadConfigError.
+    Also check for conflicting settings and raise RuntimeError.
 
     :param class_: API class to be inspected.
     :param options: Options object.
 
     :returns: dictionary for initializing the class_.
     """
+    if options.get('max_endpoint_prefix') and options.get('endpoint_prefix'):
+        raise BadConfigError(
+            f"Conflicting settings for API '{options.get('name')}': you cannot use both endpoint_prefix "
+            f"and max_endpoint_prefix: true at the same time. "
+            f"Please choose one of these options."
+        )
+
+    if options.get('max_endpoint_prefix'):
+        prefix_list = options.get('endpoint_prefix_list')
+        if prefix_list is None or (isinstance(prefix_list, list) and len(prefix_list) == 0):
+            raise BadConfigError(f"max_endpoint_prefix is set to True for API '{options.get('name')}', but endpoint_prefix_list is empty or missing")
+
 
     argspec = getfullargspec(class_.__init__)
     init_args = argspec.args
