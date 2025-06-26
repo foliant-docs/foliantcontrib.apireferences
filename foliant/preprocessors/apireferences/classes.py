@@ -928,7 +928,7 @@ def get_args_dict(class_, options: Options) -> dict:
     """
     Filter from options all keys which are not in class_.__init__ method
     Also check for all required arguments, otherwise raise BadConfigError.
-    Also check for conflicting settings and raise RuntimeError.
+    Also check for conflicting settings, otherwise raise BadConfigError.
 
     :param class_: API class to be inspected.
     :param options: Options object.
