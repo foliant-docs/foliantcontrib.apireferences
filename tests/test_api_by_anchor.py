@@ -28,9 +28,15 @@ class TestAPIByAnchor(TestCase):
             )
             self.assertTrue(mock_urlopen.called)
 
-        expected_registry = ['user-content-get-apiv2adminstatus',
-                             'user-content-get-systemrestart',
-                             'user-content-get-userlogin']
+        expected_registry = [
+            'user-content-get-apiv2adminstatus',
+            'user-content-get-systemrestart',
+            'user-content-get-systemstatus',
+            'user-content-get-userlogin',
+            'user-content-get-v1userinfo',
+            'user-content-get-v2userinfo',
+            'user-content-get-v3userinfo'
+        ]
         self.assertEqual(api.registry, expected_registry)
 
     def test_generate_registry_another_tag(self):
@@ -68,9 +74,15 @@ class TestAPIByAnchor(TestCase):
             )
             self.assertTrue(mock_urlopen.called)
 
-        expected_registry = ['user-content-get-apiv2adminstatus',
-                             'user-content-get-systemrestart',
-                             'user-content-get-userlogin']
+        expected_registry = [
+            'user-content-get-apiv2adminstatus',
+            'user-content-get-systemrestart',
+            'user-content-get-systemstatus',
+            'user-content-get-userlogin',
+            'user-content-get-v1userinfo',
+            'user-content-get-v2userinfo',
+            'user-content-get-v3userinfo'
+        ]
         self.assertEqual(api.registry, expected_registry)
 
     def get_basic_api(self):
@@ -220,3 +232,63 @@ class TestAPIByAnchor(TestCase):
         ref = Reference(bar='bar')
         with self.assertRaises(ReferenceNotFoundError):
             api.check_reference(ref)
+
+    def test_get_link_by_reference_max_version(self):
+        with patch('foliant.preprocessors.apireferences.classes.urlopen') as mock_urlopen:
+            with open(rel_name('data/simple_h2h3.html'), 'rb') as f:
+                mock_read = Mock()
+                mock_read.read.return_value = f.read()
+                mock_urlopen.return_value = mock_read
+            api = APIByAnchor(
+                name='Test',
+                url='http://example.com/',
+                multiproject=False,
+                anchor_template='user content {verb} {command}',
+                tags=['h1', 'h2', 'h3'],
+                max_endpoint_prefix=True,
+                endpoint_prefix_list=['/v1/', '/v2/', '/v3/']
+            )
+
+        ref = Reference(verb='GET', command='/user/info')
+        link = api.get_link_by_reference(ref)
+        self.assertEqual(link, 'http://example.com/#user-content-get-v3userinfo')
+
+    def test_get_link_by_reference_max_version_with_explicit_prefix(self):
+        with patch('foliant.preprocessors.apireferences.classes.urlopen') as mock_urlopen:
+            with open(rel_name('data/simple_h2h3.html'), 'rb') as f:
+                mock_read = Mock()
+                mock_read.read.return_value = f.read()
+                mock_urlopen.return_value = mock_read
+            api = APIByAnchor(
+                name='Test',
+                url='http://example.com/',
+                multiproject=False,
+                anchor_template='user content {verb} {command}',
+                tags=['h1', 'h2', 'h3'],
+                max_endpoint_prefix=True,
+                endpoint_prefix_list=['/v1/', '/v2/', '/v3/']
+            )
+
+        ref = Reference(verb='GET', command='/v1/user/info')
+        link = api.get_link_by_reference(ref)
+        self.assertEqual(link, 'http://example.com/#user-content-get-v1userinfo')
+
+    def test_get_link_by_reference_max_version_nonversioned(self):
+        with patch('foliant.preprocessors.apireferences.classes.urlopen') as mock_urlopen:
+            with open(rel_name('data/simple_h2h3.html'), 'rb') as f:
+                mock_read = Mock()
+                mock_read.read.return_value = f.read()
+                mock_urlopen.return_value = mock_read
+            api = APIByAnchor(
+                name='Test',
+                url='http://example.com/',
+                multiproject=False,
+                anchor_template='user content {verb} {command}',
+                tags=['h1', 'h2', 'h3'],
+                max_endpoint_prefix=True,
+                endpoint_prefix_list=['/v1/', '/v2/', '/v3/']
+            )
+
+        ref = Reference(verb='GET', command='/system/status')
+        link = api.get_link_by_reference(ref)
+        self.assertEqual(link, 'http://example.com/#user-content-get-systemstatus')
