@@ -32,6 +32,10 @@ class TestAPIByTagContent(TestCase):
             'GET /user/login': 'user-content-get-userlogin',
             'GET /api/v2/admin/status': 'user-content-get-apiv2adminstatus',
             'GET /system/restart': 'user-content-get-systemrestart',
+            'GET /system/status': 'user-content-get-systemstatus',
+            'GET /v1/user/info': 'user-content-get-v1userinfo',
+            'GET /v2/user/info': 'user-content-get-v2userinfo',
+            'GET /v3/user/info': 'user-content-get-v3userinfo'
         }
         self.assertEqual(api.registry, expected_registry)
 
@@ -76,6 +80,10 @@ class TestAPIByTagContent(TestCase):
             'GET /user/login': 'user-content-get-userlogin',
             'GET /api/v2/admin/status': 'user-content-get-apiv2adminstatus',
             'GET /system/restart': 'user-content-get-systemrestart',
+            'GET /system/status': 'user-content-get-systemstatus',
+            'GET /v1/user/info': 'user-content-get-v1userinfo',
+            'GET /v2/user/info': 'user-content-get-v2userinfo',
+            'GET /v3/user/info': 'user-content-get-v3userinfo'
         }
         self.assertEqual(api.registry, expected_registry)
 
@@ -217,3 +225,63 @@ class TestAPIByTagContent(TestCase):
         ref = Reference(bar='bar')
         with self.assertRaises(ReferenceNotFoundError):
             api.check_reference(ref)
+
+    def test_get_anchor_by_reference_max_version(self):
+        with patch('foliant.preprocessors.apireferences.classes.urlopen') as mock_urlopen:
+            with open(rel_name('data/simple_h2h3.html'), 'rb') as f:
+                mock_read = Mock()
+                mock_read.read.return_value = f.read()
+                mock_urlopen.return_value = mock_read
+            api = APIByTagContent(
+                name='Test',
+                url='http://example.com/',
+                multiproject=False,
+                content_template='{verb} {command}',
+                tags=['h1', 'h2', 'h3'],
+                max_endpoint_prefix=True,
+                endpoint_prefix_list=['/v1/', '/v2/', '/v3/']
+            )
+
+        ref = Reference(verb='GET', command='/user/info')
+        anchor = api.get_anchor_by_reference(ref)
+        self.assertEqual(anchor, 'user-content-get-v3userinfo')
+
+    def test_get_anchor_by_reference_max_version_with_explicit_prefix(self):
+        with patch('foliant.preprocessors.apireferences.classes.urlopen') as mock_urlopen:
+            with open(rel_name('data/simple_h2h3.html'), 'rb') as f:
+                mock_read = Mock()
+                mock_read.read.return_value = f.read()
+                mock_urlopen.return_value = mock_read
+            api = APIByTagContent(
+                name='Test',
+                url='http://example.com/',
+                multiproject=False,
+                content_template='{verb} {command}',
+                tags=['h1', 'h2', 'h3'],
+                max_endpoint_prefix=True,
+                endpoint_prefix_list=['/v1/', '/v2/', '/v3/']
+            )
+
+        ref = Reference(verb='GET', command='/v1/user/info')
+        anchor = api.get_anchor_by_reference(ref)
+        self.assertEqual(anchor, 'user-content-get-v1userinfo')
+
+    def test_get_anchor_by_reference_max_version_nonversioned(self):
+        with patch('foliant.preprocessors.apireferences.classes.urlopen') as mock_urlopen:
+            with open(rel_name('data/simple_h2h3.html'), 'rb') as f:
+                mock_read = Mock()
+                mock_read.read.return_value = f.read()
+                mock_urlopen.return_value = mock_read
+            api = APIByTagContent(
+                name='Test',
+                url='http://example.com/',
+                multiproject=False,
+                content_template='{verb} {command}',
+                tags=['h1', 'h2', 'h3'],
+                max_endpoint_prefix=True,
+                endpoint_prefix_list=['/v1/', '/v2/', '/v3/']
+            )
+
+        ref = Reference(verb='GET', command='/system/status')
+        anchor = api.get_anchor_by_reference(ref)
+        self.assertEqual(anchor, 'user-content-get-systemstatus')

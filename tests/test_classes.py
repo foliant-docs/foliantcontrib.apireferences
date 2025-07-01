@@ -5,7 +5,6 @@ from foliant.preprocessors.apireferences.classes import WrongModeError
 from foliant.preprocessors.apireferences.classes import get_api
 from unittest import TestCase
 
-
 def rel_name(path: str):
     return os.path.join(os.path.dirname(__file__), path)
 
@@ -85,5 +84,43 @@ class TestGetApi(TestCase):
                 'mode': 'wrong_mode',
                 'name': 'MyAPI',
                 'url': 'https://example.com',
+            }
+            get_api(options)
+
+    def test_endpoint_prefix_max_endpoint_prefix_conflict(self):
+        with self.assertRaises(BadConfigError):
+            options = {
+                'mode': 'find_by_tag_content',
+                'name': 'MyApi',
+                'url': 'http://example.com/',
+                'multiproject': False,
+                'content_template': '{verb} {command}',
+                'endpoint_prefix': '/v2/',
+                'max_endpoint_prefix': True
+            }
+            get_api(options)
+
+    def test_endpoint_prefix_max_empty_endpoint_prefix_list(self):
+        with self.assertRaises(BadConfigError):
+            options = {
+                'mode': 'find_by_tag_content',
+                'name': 'MyApi',
+                'url': 'http://example.com/',
+                'multiproject': False,
+                'content_template': '{verb} {command}',
+                'endpoint_prefix_list': [],
+                'max_endpoint_prefix': True
+            }
+            get_api(options)
+
+    def test_endpoint_prefix_max_without_endpoint_prefix_list(self):
+        with self.assertRaises(BadConfigError):
+            options = {
+                'mode': 'find_by_tag_content',
+                'name': 'MyApi',
+                'url': 'http://example.com/',
+                'multiproject': False,
+                'content_template': '{verb} {command}',
+                'max_endpoint_prefix': True
             }
             get_api(options)

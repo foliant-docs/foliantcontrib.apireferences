@@ -36,7 +36,6 @@ class WrongModeError(Exception):
     '''Exception which raises when user requested wrong API mode'''
     pass
 
-
 class BadConfigError(Exception):
     '''Exception which raises when API configuration is incorrect'''
     pass
@@ -45,7 +44,6 @@ class BadConfigError(Exception):
 class ReferenceNotFoundError(Exception):
     '''Exception which raises when reference is not found in API'''
     pass
-
 
 class Reference:
     '''
@@ -64,7 +62,8 @@ class Reference:
             'verb': '',
             'command': '',  # always root
             'endpoint_prefix': '' , # always root; note: endpoint_prefix is only set by API object
-            'endpoint_prefix_list': []
+            'endpoint_prefix_list': [],
+            'max_endpoint_prefix': False  # new attribute for enabling max version search
         }
         self._init_from_dict(kwargs)
 
@@ -214,6 +213,7 @@ class APIByTagContent(APIBase):
                  trim_query: bool = True,
                  endpoint_prefix: str = '',
                  endpoint_prefix_list: list = [],
+                 max_endpoint_prefix: bool = False,
                  tags: list = DEFAULT_TAG_LIST,
                  login: str or None = None,
                  password: str or None = None):
@@ -225,9 +225,9 @@ class APIByTagContent(APIBase):
         self.endpoint_prefix = endpoint_prefix
         self.endpoint_prefix_tmp = endpoint_prefix
         self.endpoint_prefix_list = endpoint_prefix_list
+        self.max_endpoint_prefix = max_endpoint_prefix
         self.login = login
         self.password = password
-
         self.command_in_content = 'command' in self.content_template
         self.check_registry()
 
@@ -280,6 +280,7 @@ class APIByTagContent(APIBase):
         """
 
         logger.debug(f'Getting link for reference {ref} in API {self.name}')
+        ref.max_endpoint_prefix = self.max_endpoint_prefix
         self.check_reference(ref)
         anchor = self.get_anchor_by_reference(ref)  # may throw ReferenceNotFoundError
         return self.gen_full_url(anchor)
@@ -305,14 +306,45 @@ class APIByTagContent(APIBase):
         registry is formed by self.content_template.  First try with `command` from
         the reference, then (if that fails) try removing leading slash from command,
         then (if that fails) try adding self.endpoint_prefix if present.
-
+        
+        If max_endpoint_prefix is True, tries to find the maximum available version
+        for the reference.
+    
         If reference cannot be found — raise ReferenceNotFoundError.
-
+    
         :param ref: Reference object to be found.
-
+    
         :returns: anchor to the referenced method.
         """
-
+        
+        ref.max_endpoint_prefix = self.max_endpoint_prefix
+        
+        if ref.max_endpoint_prefix and self.endpoint_prefix_list:
+            base_command = ref.command.lstrip('/')
+            sorted_prefixes = sorted(self.endpoint_prefix_list, reverse=True, 
+                                    key=lambda p: int(p.strip('/').replace('v', '')) if p.strip('/').replace('v', '').isdigit() else 0)
+            
+            for prefix in sorted_prefixes:
+                temp_ref = Reference(**ref.__dict__)
+                temp_ref.command = f"{prefix}{base_command}"
+                content = self.generate_content_by_reference(temp_ref, False)
+                result = self.registry.get(content)
+                
+                logger.debug(f'Trying content with prefix {prefix}: {content}')
+                
+                if result:
+                    self.endpoint_prefix_tmp = prefix
+                    logger.debug(f'Found anchor with prefix {prefix}: {result}')
+                    return result
+                
+                if self.command_in_content:
+                    content = self.generate_content_by_reference(temp_ref, False, True)
+                    result = self.registry.get(content)
+                    if result:
+                        self.endpoint_prefix_tmp = prefix
+                        logger.debug(f'Found anchor with prefix {prefix} (relative command): {result}')
+                        return result
+        
         content = self.generate_content_by_reference(ref, False)
         result = self.registry.get(content)
         if result:
@@ -330,7 +362,6 @@ class APIByTagContent(APIBase):
                 if result:
                     logger.debug(f'Found anchor: {result}')
                     return result
-
         logger.debug('Not found')
         raise ReferenceNotFoundError(f'Reference {ref.source} not found in API "{self.name}"')
 
@@ -374,6 +405,9 @@ class APIByAnchor(APIBase):
     """
     API class which generates links based on tag id. It parses the url and
     collects ids from specified tag list.
+
+    If max_endpoint_prefix is True, tries to find the maximum available version
+    for the reference.
     """
 
     mode = 'find_by_anchor'
@@ -387,6 +421,7 @@ class APIByAnchor(APIBase):
                  anchor_converter: str = 'pandoc',
                  endpoint_prefix: str = '',
                  endpoint_prefix_list: list = [],
+                 max_endpoint_prefix: bool = False,
                  tags: list = DEFAULT_TAG_LIST,
                  login: str or None = None,
                  password: str or None = None):
@@ -399,9 +434,9 @@ class APIByAnchor(APIBase):
         self.endpoint_prefix = endpoint_prefix
         self.endpoint_prefix_tmp = endpoint_prefix
         self.endpoint_prefix_list = endpoint_prefix_list
+        self.max_endpoint_prefix = max_endpoint_prefix
         self.login = login
         self.password = password
-
         self.command_in_anchor = 'command' in self.anchor_template
         self.check_registry()
 
@@ -452,6 +487,7 @@ class APIByAnchor(APIBase):
         """
 
         logger.debug(f'Getting link for reference {ref} in API {self.name}')
+        ref.max_endpoint_prefix = self.max_endpoint_prefix
         self.check_reference(ref)
         anchor = self.get_anchor_by_reference(ref)  # may throw ReferenceNotFoundError
         return self.gen_full_url(anchor)
@@ -473,18 +509,34 @@ class APIByAnchor(APIBase):
 
     def get_anchor_by_reference(self, ref: Reference) -> str:
         """
-        Get anchor for the reference from self.registry. The search is performed by
-        anchor formatted by self.anchor_template. First try with `command from the
-        reference, then (if that fails), try removing leading slash from command,
-        then (if that fails), try adding self.endpoint_prefix if present.
-
+        Get anchor for the reference from self.registry. If max_endpoint_prefix is True,
+        finds the maximum available version for the reference.
+    
         If reference cannot be found — raise ReferenceNotFoundError.
-
+    
         :param ref: Reference object to be found.
-
+    
         :returns: found version of anchor.
         """
 
+        if ref.max_endpoint_prefix and self.endpoint_prefix_list:
+            base_command = ref.command.lstrip('/')
+            sorted_prefixes = sorted(self.endpoint_prefix_list, reverse=True, 
+                                    key=lambda p: int(p.strip('/').replace('v', '')) if p.strip('/').replace('v', '').isdigit() else 0)
+            
+            for prefix in sorted_prefixes:
+                temp_ref = Reference(**ref.__dict__)
+                temp_ref.command = f"{prefix}{base_command}"
+                temp_anchor = self.generate_anchor_by_reference(temp_ref, False)
+                
+                logger.debug(f'Trying anchor with prefix {prefix}: {temp_anchor}')
+                
+
+                if self.is_in_registry(temp_anchor):
+                    self.endpoint_prefix_tmp = prefix
+                    logger.debug(f'Found anchor with prefix {prefix}: {temp_anchor}')
+                    return temp_anchor
+        
         anchor = self.generate_anchor_by_reference(ref, False)
         if self.is_in_registry(anchor):
             logger.debug(f'Found anchor by reference"{anchor}"')
@@ -499,10 +551,9 @@ class APIByAnchor(APIBase):
                 if self.is_in_registry(anchor):
                     logger.debug(f'Found anchor with endpoint prefix"{anchor}"')
                     return anchor
-
         logger.debug('Not found')
         raise ReferenceNotFoundError(f'Reference {ref.source} not found in API "{self.name}"')
-
+    
     def is_in_registry(self, elem: str) -> bool:
         """
         Search for elem in the registry, return result of the search.
@@ -877,12 +928,25 @@ def get_args_dict(class_, options: Options) -> dict:
     """
     Filter from options all keys which are not in class_.__init__ method
     Also check for all required arguments, otherwise raise BadConfigError.
+    Also check for conflicting settings, otherwise raise BadConfigError.
 
     :param class_: API class to be inspected.
     :param options: Options object.
 
     :returns: dictionary for initializing the class_.
     """
+    if options.get('max_endpoint_prefix') and options.get('endpoint_prefix'):
+        raise BadConfigError(
+            f"Conflicting settings for API '{options.get('name')}': you cannot use both endpoint_prefix "
+            f"and max_endpoint_prefix: true at the same time. "
+            f"Please choose one of these options."
+        )
+
+    if options.get('max_endpoint_prefix'):
+        prefix_list = options.get('endpoint_prefix_list')
+        if prefix_list is None or (isinstance(prefix_list, list) and len(prefix_list) == 0):
+            raise BadConfigError(f"max_endpoint_prefix is set to True for API '{options.get('name')}', but endpoint_prefix_list is empty or missing")
+
 
     argspec = getfullargspec(class_.__init__)
     init_args = argspec.args
