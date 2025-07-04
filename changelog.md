@@ -1,3 +1,7 @@
+# 1.0.8
+
+- New: `max_endpoint_prefix` (default: `False`) option for `find_by_anchor` and `find_by_tag_content` modes. Used to find the highest available version of the API method when API methods have different maximum versions in the documentation.
+
 # 1.0.7
 
 - Fix: small fix for proper work when input reference is a list item and have initial and last spaces inside

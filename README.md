@@ -225,6 +225,15 @@ preprocessors:
             tags: ['h1', 'h2', 'h3', 'h4']  # optional
             login: login  # optional
             password: password  # optional
+        Another-API: # with max_endpoint_prefix option
+            mode: find_by_anchor
+            url: http://example.com/api/admin
+            anchor_template: '{verb} {command}'
+            anchor_converter: pandoc  # optional
+            endpoint_prefix_list: [/v2/,/v3/,/v4/] #required if max_endpoint_prefix: true
+            max_endpoint_prefix: true # optional
+            login: login  # optional
+            password: password  # optional
         External-API:
             mode: find_by_tag_content
             url: http://example.com/api/external
@@ -339,6 +348,9 @@ The list of options and some default values differ for each mode.
 `endpoint_prefix_list`
 : *(optional)* The list of available endpoint prefixes which could be added to output. Default: `[]`
 
+`max_endpoint_prefix`
+: *(optional)* If set to True and endpoint_prefix_list is not empty, the preprocessor will automatically search for the highest available version of the API method. It iterates through the endpoint_prefix_list in descending order until it finds the method. This is useful when API methods have different maximum versions in the documentation. Default: `False`
+
 `tags`
 :   *(optional)* list of HTML tags which will be parsed out from the page and searched for ids. Default: `['h1', 'h2', 'h3', 'h4']`
 
@@ -364,6 +376,9 @@ The list of options and some default values differ for each mode.
 
 `endpoint_prefix_list`
 : *(optional)* The list of available endpoint prefixes which could be added to output. Default: `[]`
+
+`max_endpoint_prefix`
+: *(optional)* If set to True and endpoint_prefix_list is not empty, the preprocessor will automatically search for the highest available version of the API method. It iterates through the endpoint_prefix_list in descending order until it finds the method. This is useful when API methods have different maximum versions in the documentation. Default: `False`
 
 `tags`
 :   *(optional)* list of HTML tags which will be parsed out from the page and searched for ids. Default: `['h1', 'h2', 'h3', 'h4']`
@@ -880,6 +895,56 @@ If you were reading carefully, you already know the answer — all of these refe
 [GET /user/status](http://example.com/api#asoi17uo)
 [GET /user/status](http://example.com/api#asoi17uo)
 ```
+
+## Maximum Version Detection
+
+In APIReferences, the `endpoint_prefix` option is typically used to specify the API version (like `/api/v1/` or `/v2/`) for all method references. This is the standard way to handle versioned API endpoints. However, there are cases when API methods have different maximum versions available in the API documentation web-page.
+
+To handle such cases, APIReferences can automatically detect and use the highest available version of an API method when the version is not explicitly specified in the reference. This feature is particularly useful when API methods have different maximum versions in the documentation.
+
+To enable this functionality, you need to:
+
+- Set `max_endpoint_prefix` to True
+- Provide a list of available API versions in `endpoint_prefix_list`
+
+Here's an example configuration:
+
+```yml
+preprocessors:
+    apireferences:
+        API:
+            Admin-API:
+                mode: find_by_anchor
+                url: http://example.com/api/admin
+                anchor_template: '{verb} {command}'
+                anchor_converter: slate
+                endpoint_prefix_list: [/v2/,/v3/,/v4/] 
+                max_endpoint_prefix: true
+```
+
+Given that the API documentation contains methods in different versions:
+
+- `GET /v2/user/status`
+- `GET /v3/user/status`
+- `GET /v4/user/status`
+
+When you use a reference without specifying the version:
+
+- `GET /user/status`
+
+The preprocessor will automatically find and use the highest available version for method:
+
+```md
+[GET /v4/user/status](http://example.com/#get-v4-user-status)
+```
+
+Important notes:
+
+- `max_endpoint_prefix` cannot be used together with `endpoint_prefix` as they serve different purposes:
+    - endpoint_prefix sets a fixed version for all methods
+    - max_endpoint_prefix automatically determines the highest available version
+- `max_endpoint_prefix` only works when `endpoint_prefix_list` is provided and contains version prefixes
+- This feature only works with `find_by_anchor` and `find_by_tag_content` modes
 
 
 # Capturing References
