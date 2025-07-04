@@ -1,3 +1,7 @@
+# 1.0.9
+
+- New: `apiref_registry_url` option. Enables the use of a remote registry.
+
 # 1.0.8
 
 - New: `max_endpoint_prefix` (default: `False`) option for `find_by_anchor` and `find_by_tag_content` modes. Used to find the highest available version of the API method when API methods have different maximum versions in the documentation.

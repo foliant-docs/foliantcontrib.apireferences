@@ -165,10 +165,12 @@ class APIBase:
     def __init__(self,
                  name: str,
                  url: str,
-                 multiproject: bool):
+                 multiproject: bool,
+                 apiref_registry: str or None):
         self.name = name
         self.url = url
         self.multiproject = multiproject
+        self.apiref_registry = apiref_registry
 
     def __repr__(self):
         attrs = ', '.join(f'{k}={v}' for k, v in self.__dict__.items())
@@ -196,7 +198,6 @@ class APIBase:
         raise NotImplementedError()
 
 
-
 class APIByTagContent(APIBase):
     """
     API class which generates links based on tag content. It parses the url and
@@ -216,8 +217,10 @@ class APIByTagContent(APIBase):
                  max_endpoint_prefix: bool = False,
                  tags: list = DEFAULT_TAG_LIST,
                  login: str or None = None,
-                 password: str or None = None):
-        super().__init__(name, url, multiproject)
+                 password: str or None = None,
+                 apiref_registry: str or None = None,
+                 ):
+        super().__init__(name, url, multiproject, apiref_registry)
         self.content_template = content_template
         self.trim_query = trim_query
         self.tags = tags
@@ -232,7 +235,9 @@ class APIByTagContent(APIBase):
         self.check_registry()
 
     def check_registry(self):
-        if self.multiproject:
+        if self.apiref_registry:
+            self.registry = self.apiref_registry[self.name]
+        elif self.multiproject:
             registry_file = os.path.join('../', self.name + '.apirefregistry')
             if os.path.isfile(registry_file):
                 with open(registry_file) as json_file:
@@ -424,8 +429,11 @@ class APIByAnchor(APIBase):
                  max_endpoint_prefix: bool = False,
                  tags: list = DEFAULT_TAG_LIST,
                  login: str or None = None,
-                 password: str or None = None):
-        super().__init__(name, url, multiproject)
+                 password: str or None = None,
+                 apiref_registry: str or None = None,
+                 ):
+        super().__init__(name, url, multiproject, apiref_registry)
+        self.name = name
         self.anchor_template = anchor_template
         self.trim_query = trim_query
         self.anchor_converter = anchor_converter
@@ -441,7 +449,9 @@ class APIByAnchor(APIBase):
         self.check_registry()
 
     def check_registry(self):
-        if self.multiproject:
+        if self.apiref_registry:
+            self.registry = self.apiref_registry[self.name]
+        elif self.multiproject:
             registry_file = os.path.join('../', self.name + '.apirefregistry')
             if os.path.isfile(registry_file):
                 with open(registry_file) as json_file:
@@ -625,8 +635,10 @@ class APIGenAnchor(APIBase):
                  trim_query: bool = True,
                  anchor_converter: str = 'pandoc',
                  endpoint_prefix: str = '',
-                 endpoint_prefix_list = []):
-        super().__init__(name, url, multiproject)
+                 endpoint_prefix_list = [],
+                 apiref_registry: str or None = None,
+                 ):
+        super().__init__(name, url, multiproject, apiref_registry)
         self.anchor_template = anchor_template
         self.trim_query = trim_query
         self.anchor_converter = anchor_converter
@@ -709,8 +721,9 @@ class APIBySwagger(APIBase):
         endpoint_prefix_list: list = [],
         login: str or None = None,
         password: str or None = None,
+        apiref_registry: str or None = None,
     ):
-        super().__init__(name, url, multiproject)
+        super().__init__(name, url, multiproject, apiref_registry)
         self.trim_query = trim_query
         self.anchor_template = anchor_template
         self.anchor_converter = anchor_converter
@@ -749,7 +762,9 @@ class APIBySwagger(APIBase):
         self.spec = yaml.load(spec, yaml.Loader)
 
     def check_registry(self):
-        if self.multiproject:
+        if self.apiref_registry:
+            self.registry = self.apiref_registry[self.name]
+        elif self.multiproject:
             registry_file = os.path.join('../', self.name + '.apirefregistry')
             if os.path.isfile(registry_file):
                 with open(registry_file) as json_file:

@@ -274,6 +274,9 @@ preprocessors:
 
 > All reference properties have defaults. If any of them are missing in the config, the defaults will be used. If `reference` section is omitted, APIReferences will use default values.
 
+`apiref_registry_url`
+:   *(optional)* the URL of the remote registry. This option allows to use a pre-prepared registry instead of building a registry with each documentation build.
+
 ***
 
 **Reference options**
@@ -945,6 +948,29 @@ Important notes:
     - max_endpoint_prefix automatically determines the highest available version
 - `max_endpoint_prefix` only works when `endpoint_prefix_list` is provided and contains version prefixes
 - This feature only works with `find_by_anchor` and `find_by_tag_content` modes
+
+## Remote Registry
+
+The `apiref_registry_url` option enables the use of a remote registry, streamlining the documentation assembly process by eliminating the need to re-parse the registry.
+
+A registry is essentially a JSON file with a structured format:
+
+```json
+{
+    "admin": [
+        "post-logo",
+        "post-users"
+    ],
+    "client": [
+        "get-logo"
+        "get-users",
+    ]
+}
+```
+
+> When working with a multiproject setup, the registry is automatically saved in the `.multiprojectcache` directory.
+
+To create a registry, use an empty foliant-project with a multiproject configuration and the apireferences preprocessor. The `.multiprojectcache` directory will contain `.apirefregistry` files that can be combined and hosted on a server.
 
 
 # Capturing References
