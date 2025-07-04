@@ -274,6 +274,9 @@ preprocessors:
 
 > All reference properties have defaults. If any of them are missing in the config, the defaults will be used. If `reference` section is omitted, APIReferences will use default values.
 
+`apiref_registry_url`
+:   *(optional)* the URL of the remote registry. This option allows to use a pre-prepared registry instead of building a registry with each documentation build.
+
 ***
 
 **Reference options**
